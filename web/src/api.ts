@@ -123,7 +123,7 @@ export interface ConfigResp {
   tool_call: { extra_starts: string[]; extra_ends: string[] };
   server: {
     host: string; port: number; cors_origins: string[]; healthcheck_on_login: boolean;
-    init_concurrency: number; recovery_interval: number; acquire_timeout_ms: number; max_attempts: number;
+    init_concurrency: number; recovery_interval: number; acquire_timeout_ms: number; max_attempts: number; min_account_interval_ms: number;
   };
   proxy_url: string; model_aliases: Record<string, string>; password_set: boolean;
 }
@@ -135,5 +135,5 @@ export interface ConfigInput {
   input_character_limits?: Record<string, number>; model_aliases?: Record<string, string>;
   tool_call_extra_starts?: string[]; tool_call_extra_ends?: string[]; cors_origins?: string[];
   healthcheck_on_login?: boolean; init_concurrency?: number; recovery_interval?: number;
-  acquire_timeout_ms?: number; max_attempts?: number;
+  acquire_timeout_ms?: number; max_attempts?: number; min_account_interval_ms?: number;
 }

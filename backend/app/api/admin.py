@@ -321,6 +321,7 @@ async def get_config(_: bool = Depends(require_admin)):
             "recovery_interval": config.RECOVERY_INTERVAL,
             "acquire_timeout_ms": config.ACQUIRE_TIMEOUT_MS,
             "max_attempts": config.MAX_ATTEMPTS,
+            "min_account_interval_ms": config.MIN_ACCOUNT_INTERVAL_MS,
         },
         "proxy_url": await store.get_setting("proxy_url", ""),
         "model_aliases": aliases,
@@ -351,6 +352,7 @@ class ConfigReq(BaseModel):
     recovery_interval: int | None = None
     acquire_timeout_ms: int | None = None
     max_attempts: int | None = None
+    min_account_interval_ms: int | None = None
 
 
 def _clean_url(url: str) -> str:
@@ -442,6 +444,11 @@ async def save_config(req: ConfigReq, _: bool = Depends(require_admin)):
             raise HTTPException(400, "max_attempts phải từ 1 đến 10")
         config.MAX_ATTEMPTS = req.max_attempts
         await store.set_setting("max_attempts", config.MAX_ATTEMPTS)
+    if req.min_account_interval_ms is not None:
+        if req.min_account_interval_ms < 0 or req.min_account_interval_ms > 10 * 60 * 1000:
+            raise HTTPException(400, "min_account_interval_ms phải từ 0 đến 600000")
+        config.MIN_ACCOUNT_INTERVAL_MS = req.min_account_interval_ms
+        await store.set_setting("min_account_interval_ms", config.MIN_ACCOUNT_INTERVAL_MS)
     if req.new_password:
         pw_hash = await store.get_setting("admin_password_hash")
         if pw_hash and not crypto.verify_password(req.old_password or "", pw_hash):

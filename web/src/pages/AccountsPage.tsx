@@ -231,6 +231,24 @@ export default function AccountsPage() {
         </div>
       </div>
 
+
+      <div className="card mb-24" style={{ border: '1px solid rgba(245, 158, 11, 0.28)', background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.10), rgba(34, 197, 94, 0.06))' }}>
+        <div className="card-title">Hướng dẫn dùng nhiều tài khoản DeepSeek</div>
+        <p style={{ color: 'var(--text-dim)', marginBottom: 12 }}>
+          Nên dùng nhiều tài khoản DeepSeek phụ/rác để chia tải. Mỗi request chỉ dùng 1 tài khoản; sau khi trả lời xong, tài khoản đó sẽ nghỉ một khoảng thời gian trước khi được dùng lại để giảm nguy cơ bị mute/rate-limit.
+        </p>
+        <div className="grid-2" style={{ alignItems: 'center' }}>
+          <div>
+            <div className="hint">Mặc định hiện tại: khoảng <b>45 giây</b> giữa 2 request trên cùng 1 tài khoản.</div>
+            <div className="hint">Ví dụ: 10 tài khoản chạy an toàn hơn khoảng 10-13 request/phút; muốn nhanh hơn thì tăng số tài khoản hoặc giảm giây trong Cài đặt.</div>
+          </div>
+          <div className="row" style={{ justifyContent: 'flex-end', gap: 10 }}>
+            <a className="btn" href="https://chat.deepseek.com/sign_up" target="_blank" rel="noreferrer">Đăng ký tài khoản DeepSeek</a>
+            <a className="btn btn-primary" href="/admin/config">Chỉnh giãn cách request</a>
+          </div>
+        </div>
+      </div>
+
       <div className="stat-grid mb-24 account-stat-grid">
         <div className="stat-card">
           <div className="label">Tổng tài khoản</div>

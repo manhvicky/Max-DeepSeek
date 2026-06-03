@@ -115,6 +115,7 @@ async def lifespan(app: FastAPI):
         "recovery_interval": "RECOVERY_INTERVAL",
         "acquire_timeout_ms": "ACQUIRE_TIMEOUT_MS",
         "max_attempts": "MAX_ATTEMPTS",
+        "min_account_interval_ms": "MIN_ACCOUNT_INTERVAL_MS",
     }.items():
         _val = await store.get_setting(_key, None)
         if _val is not None:

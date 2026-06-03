@@ -32,7 +32,7 @@ export default function ConfigPage() {
     api_base: '', wasm_url: '', user_agent: '', client_version: '', client_platform: '', client_locale: '',
     model_types: '', max_input_tokens: '', max_output_tokens: '', input_character_limits: '', model_aliases: '',
     tool_call_extra_starts: '', tool_call_extra_ends: '', cors_origins: '', healthcheck_on_login: false,
-    init_concurrency: 2, recovery_interval: 60, acquire_timeout_ms: 30000, max_attempts: 3,
+    init_concurrency: 2, recovery_interval: 60, acquire_timeout_ms: 30000, max_attempts: 3, min_account_interval_secs: 45,
   });
   const [oldPw, setOldPw] = useState('');
   const [newPw, setNewPw] = useState('');
@@ -52,6 +52,7 @@ export default function ConfigPage() {
         tool_call_extra_ends: lines(c.tool_call.extra_ends), cors_origins: lines(c.server.cors_origins),
         healthcheck_on_login: c.server.healthcheck_on_login, init_concurrency: c.server.init_concurrency,
         recovery_interval: c.server.recovery_interval, acquire_timeout_ms: c.server.acquire_timeout_ms, max_attempts: c.server.max_attempts,
+        min_account_interval_secs: Math.round((c.server.min_account_interval_ms || 0) / 1000),
       });
     }).catch((e) => toast(e instanceof Error ? e.message : 'Không tải được cấu hình', 'err'));
   }, []);
@@ -69,6 +70,7 @@ export default function ConfigPage() {
         tool_call_extra_ends: splitLines(form.tool_call_extra_ends), cors_origins: splitLines(form.cors_origins),
         healthcheck_on_login: form.healthcheck_on_login, init_concurrency: Number(form.init_concurrency),
         recovery_interval: Number(form.recovery_interval), acquire_timeout_ms: Number(form.acquire_timeout_ms), max_attempts: Number(form.max_attempts),
+        min_account_interval_ms: Math.max(0, Number(form.min_account_interval_secs)) * 1000,
       });
       toast('Đã lưu cấu hình', 'ok');
     } catch (e) { toast(e instanceof Error ? e.message : 'Lỗi', 'err'); }
@@ -112,6 +114,7 @@ export default function ConfigPage() {
         <div className="field"><label>Recovery Interval giây</label><input className="input" type="number" value={form.recovery_interval} onChange={(e) => set('recovery_interval', Number(e.target.value))} /></div>
         <div className="field"><label>Acquire Timeout ms</label><input className="input" type="number" value={form.acquire_timeout_ms} onChange={(e) => set('acquire_timeout_ms', Number(e.target.value))} /></div>
         <div className="field"><label>Max Attempts</label><input className="input" type="number" value={form.max_attempts} onChange={(e) => set('max_attempts', Number(e.target.value))} /></div>
+        <div className="field"><label>Giãn cách mỗi tài khoản (giây)</label><input className="input" type="number" min={0} max={600} value={form.min_account_interval_secs} onChange={(e) => set('min_account_interval_secs', Number(e.target.value))} /><p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>Khuyến nghị 45-60 giây. Giá trị càng thấp càng nhanh nhưng dễ bị DeepSeek mute/khóa tạm.</p></div>
         <label className="checkline"><input type="checkbox" checked={form.healthcheck_on_login} onChange={(e) => set('healthcheck_on_login', e.target.checked)} /> Health check bằng chat thật khi login/recovery</label>
       </div>
       <button className="btn btn-primary" onClick={saveAll} disabled={loading}>Lưu server/tool call</button>
