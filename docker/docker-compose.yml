@@ -1,0 +1,15 @@
+services:
+  max-deepseek:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: max-deepseek:latest
+    container_name: max-deepseek
+    restart: unless-stopped
+    ports:
+      - "22218:22218"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      # - DS_PROXY_URL=http://host:port   # nếu IP máy chủ ở Mỹ, cần proxy non-US

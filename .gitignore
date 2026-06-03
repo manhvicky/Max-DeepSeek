@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+backend/data/
+data/
+web/node_modules/
+web/dist/
+backend/web_dist/assets/
+*.log
+.DS_Store
+*.bak.*
+*.tsbuildinfo
