@@ -26,6 +26,8 @@ docker run -d \
   --restart unless-stopped \
   -p "$PORT:$PORT" \
   -e DATA_DIR=/app/data \
+  -e DS_MIN_ACCOUNT_INTERVAL_MS=45000 \
+  -e DS_RESERVE_IDLE_MIN=0 \
   -v "$APP_DIR/docker/data:/app/data" \
   "$IMAGE" >/dev/null
 

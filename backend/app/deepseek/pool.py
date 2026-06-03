@@ -211,12 +211,17 @@ class AccountPool:
         deadline = _now_ms() + config.ACQUIRE_TIMEOUT_MS
         while True:
             async with self._lock:
+                min_gap = max(0, getattr(config, "MIN_ACCOUNT_INTERVAL_MS", 0))
+                now_ms = _now_ms()
                 candidates = [
                     a for a in sorted(
                         self._accounts.values(),
-                        key=lambda x: (x.is_quarantined, x.cooldown_strikes, x.id),
+                        key=lambda x: (x.is_quarantined, x.cooldown_strikes, x.last_released, x.id),
                     )
-                    if a.state == State.IDLE and a.enabled and not a.is_quarantined
+                    if a.state == State.IDLE
+                    and a.enabled
+                    and not a.is_quarantined
+                    and (a.last_released <= 0 or now_ms - a.last_released >= min_gap)
                 ]
                 enabled_ready = [a for a in self._accounts.values() if a.enabled and not a.is_quarantined]
                 reserve = min(config.RESERVE_IDLE_MIN, max(0, len(enabled_ready) - 1))

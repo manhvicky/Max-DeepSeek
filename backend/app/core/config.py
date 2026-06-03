@@ -23,6 +23,7 @@ MAX_ERROR_COUNT = 3          # error_count >= 3 → invalid (chỉ cho lỗi m�
 RECOVERY_INTERVAL = int(os.getenv("DS_RECOVERY_INTERVAL", "20"))       # giây — recovery task quét account error/cooling
 ACQUIRE_TIMEOUT_MS = int(os.getenv("DS_ACQUIRE_TIMEOUT_MS", "10000"))  # chờ account idle tối đa
 ACQUIRE_POLL_MS = 200
+MIN_ACCOUNT_INTERVAL_MS = int(os.getenv("DS_MIN_ACCOUNT_INTERVAL_MS", "45000"))  # giãn cách tối thiểu giữa 2 request/account
 MAX_ATTEMPTS = int(os.getenv("DS_MAX_ATTEMPTS", "2"))             # retry sang account khác
 RETRY_BACKOFF_MS = 500
 INIT_CONCURRENCY = int(os.getenv("DS_INIT_CONCURRENCY", "2"))  # tránh login dồn dập làm DeepSeek mute
