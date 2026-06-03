@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, type Account } from '../api';
+import { api, type Account, type ConfigResp } from '../api';
 import { useToast } from '../toast';
 import { IconPlus, IconTrash, IconRefresh, IconZap } from '../icons';
 
@@ -33,6 +33,9 @@ export default function AccountsPage() {
   const [toggling, setToggling] = useState<number | null>(null);
   const [view, setView] = useState<ViewMode>(() => (localStorage.getItem(COLS_KEY) as ViewMode) || 'list');
   const [sort, setSort] = useState<SortState>(() => (localStorage.getItem(SORT_KEY) as SortState) || 'none');
+  const [cfg, setCfg] = useState<ConfigResp | null>(null);
+  const [intervalSecs, setIntervalSecs] = useState(45);
+  const [savingInterval, setSavingInterval] = useState(false);
   const toast = useToast();
 
   const setViewP = (v: ViewMode) => { setView(v); localStorage.setItem(COLS_KEY, v); };
@@ -45,9 +48,26 @@ export default function AccountsPage() {
   };
   useEffect(() => {
     load();
+    api.getConfig().then((c) => {
+      setCfg(c);
+      setIntervalSecs(Math.round((c.server.min_account_interval_ms || 0) / 1000));
+    }).catch(() => {});
     const t = setInterval(load, 6000);
     return () => clearInterval(t);
   }, []);
+
+  const saveInterval = async () => {
+    const secs = Math.max(0, Math.min(600, Number(intervalSecs) || 0));
+    setSavingInterval(true);
+    try {
+      await api.saveConfig({ min_account_interval_ms: secs * 1000 });
+      setCfg((c) => c ? { ...c, server: { ...c.server, min_account_interval_ms: secs * 1000 } } : c);
+      setIntervalSecs(secs);
+      toast(`Đã lưu giãn cách ${secs} giây/tài khoản`, 'ok');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Lỗi lưu giãn cách', 'err');
+    } finally { setSavingInterval(false); }
+  };
 
   // sort logic
   const cycleColSort = (col: "email" | "label") => {
@@ -239,12 +259,15 @@ export default function AccountsPage() {
         </p>
         <div className="grid-2" style={{ alignItems: 'center' }}>
           <div>
-            <div className="hint">Mặc định hiện tại: khoảng <b>45 giây</b> giữa 2 request trên cùng 1 tài khoản.</div>
-            <div className="hint">Ví dụ: 10 tài khoản chạy an toàn hơn khoảng 10-13 request/phút; muốn nhanh hơn thì tăng số tài khoản hoặc giảm giây trong Cài đặt.</div>
+            <div className="hint">Hiện tại: khoảng <b>{cfg ? Math.round((cfg.server.min_account_interval_ms || 0) / 1000) : intervalSecs} giây</b> giữa 2 request trên cùng 1 tài khoản.</div>
+            <div className="hint">Ví dụ: 10 tài khoản chạy an toàn hơn khoảng 10-13 request/phút; muốn nhanh hơn thì tăng số tài khoản hoặc giảm giây.</div>
           </div>
-          <div className="row" style={{ justifyContent: 'flex-end', gap: 10 }}>
+          <div className="row" style={{ justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
             <a className="btn" href="https://chat.deepseek.com/sign_up" target="_blank" rel="noreferrer">Đăng ký tài khoản DeepSeek</a>
-            <a className="btn btn-primary" href="/admin/config">Chỉnh giãn cách request</a>
+            <div className="row" style={{ gap: 8 }}>
+              <input className="input" type="number" min={0} max={600} value={intervalSecs} onChange={(e) => setIntervalSecs(Number(e.target.value))} style={{ width: 110 }} />
+              <button className="btn btn-primary" onClick={saveInterval} disabled={savingInterval}>{savingInterval ? <span className="spinner" /> : 'Lưu giây'}</button>
+            </div>
           </div>
         </div>
       </div>
