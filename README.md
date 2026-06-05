@@ -13,6 +13,10 @@ Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan Dee
 
 ## Tinh nang
 
+![Dashboard overview](docs/assets/dashboard-overview-auth.png)
+
+_Giao dien tong quan cua dashboard admin sau khi dang nhap._
+
 - Tuong thich OpenAI: `/v1/models`, `/v1/chat/completions`, ho tro stream va non-stream
 - Pool tai khoan DeepSeek: login nen, xoay vong theo tai, cooldown/recovery khi account bi gioi han
 - Hien thi thong ke request, token, do tre, log va tinh trang account
@@ -43,6 +47,7 @@ Tai lieu lien quan:
 - Chinh sach bao mat: `SECURITY.md`
 - Ghi chu phat hanh: `CHANGELOG.md`
 - Checklist release: `docs/RELEASE_CHECKLIST.md`
+- Checklist tiep theo: `docs/V1_0_1_CHECKLIST.md`
 
 ```bash
 git clone https://github.com/manhvicky/Max-DeepSeek.git
@@ -151,6 +156,13 @@ MAX_DEEPSEEK_ADMIN_PASSWORD='<ADMIN_PASSWORD>' \
 MAX_DEEPSEEK_API_KEY='<YOUR_API_KEY>' \
 python3 scripts/smoke_test.py
 ```
+
+## Known limitations
+
+- Day la gateway self-hosted dua tren pool tai khoan web, nen do on dinh phu thuoc vao tai khoan, proxy va thay doi tu upstream
+- Chua co bo test day du cho moi flow giao dien/admin; ban nay uu tien smoke test va build-check
+- Update center hien nghieng ve kieu self-hosted/manual update, chua phai auto-updater phuc tap
+- Khi public instance cho nguoi ngoai, van can tu cau hinh CORS, backup, rate-limit va giam sat rieng
 
 ## Public an toan hon
 
