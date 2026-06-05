@@ -66,3 +66,16 @@ WASM_CACHE = os.path.join(DATA_DIR, "pow.wasm")
 HEALTHCHECK_ON_LOGIN = os.getenv("DS_HEALTHCHECK_ON_LOGIN", "0").lower() in ("1", "true", "yes")
 HEALTHCHECK_PROMPT = "只回复`Hello, world!`"
 
+
+
+APP_NAME = "Max-DeepSeek"
+APP_VERSION = os.getenv("MAX_DEEPSEEK_VERSION", "1.0.0")
+APP_REPOSITORY = os.getenv("MAX_DEEPSEEK_REPOSITORY", "https://github.com/manhvicky/Max-DeepSeek")
+APP_AUTHOR_NAME = os.getenv("MAX_DEEPSEEK_AUTHOR_NAME", "Vu Duy Manh")
+APP_AUTHOR_EMAIL = os.getenv("MAX_DEEPSEEK_AUTHOR_EMAIL", "manhq7@gmail.com")
+UPDATE_CHANNEL = os.getenv("MAX_DEEPSEEK_UPDATE_CHANNEL", "stable")
+UPDATE_MANIFEST_URL = os.getenv("MAX_DEEPSEEK_UPDATE_MANIFEST_URL", "")
+UPDATE_COMMAND = os.getenv("MAX_DEEPSEEK_UPDATE_COMMAND", "bash /app/scripts/update.sh")
+ROLLBACK_COMMAND = os.getenv("MAX_DEEPSEEK_ROLLBACK_COMMAND", "bash /app/scripts/rollback.sh")
+ALLOW_SELF_UPDATE = os.getenv("MAX_DEEPSEEK_ALLOW_SELF_UPDATE", "0").strip().lower() in {"1", "true", "yes", "on"}
+UPDATE_CHECK_TIMEOUT = float(os.getenv("MAX_DEEPSEEK_UPDATE_CHECK_TIMEOUT", "6"))

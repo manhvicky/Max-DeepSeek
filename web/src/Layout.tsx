@@ -2,38 +2,42 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { clearToken, api, type StatusResp } from './api';
 import {
-  IconDashboard, IconUsers, IconKey, IconBox, IconList, IconSettings, IconLogout, IconBook, IconGlobe,
+  IconDashboard, IconUsers, IconKey, IconBox, IconList, IconSettings, IconLogout, IconBook, IconGlobe, IconRefresh, IconSparkles,
 } from './icons';
 
 const NAV = [
-  { to: '/admin', end: true, icon: IconDashboard, label: 'Tổng quan' },
-  { to: '/admin/accounts', icon: IconUsers, label: 'Tài khoản DeepSeek' },
+  { to: '/admin', end: true, icon: IconDashboard, label: 'Tong quan' },
+  { to: '/admin/accounts', icon: IconUsers, label: 'Tai khoan DeepSeek' },
   { to: '/admin/keys', icon: IconKey, label: 'API Key' },
-  { to: '/admin/docs', icon: IconBook, label: 'Hướng dẫn' },
-  { to: '/admin/models', icon: IconBox, label: 'Mô hình' },
-  { to: '/admin/logs', icon: IconList, label: 'Nhật ký' },
-  { to: '/admin/config', icon: IconSettings, label: 'Cấu hình' },
+  { to: '/admin/docs', icon: IconBook, label: 'Huong dan' },
+  { to: '/admin/update', icon: IconRefresh, label: 'Cap nhat' },
+  { to: '/admin/about', icon: IconSparkles, label: 'Tac gia' },
+  { to: '/admin/models', icon: IconBox, label: 'Mo hinh' },
+  { to: '/admin/logs', icon: IconList, label: 'Nhat ky' },
+  { to: '/admin/config', icon: IconSettings, label: 'Cau hinh' },
   { to: '/admin/proxy', icon: IconGlobe, label: 'Proxy' },
 ];
 
 const BOTTOM_NAV = [
-  { to: '/admin', end: true, icon: IconDashboard, label: 'Tổng quan' },
-  { to: '/admin/accounts', icon: IconUsers, label: 'Tài khoản' },
+  { to: '/admin', end: true, icon: IconDashboard, label: 'Tong quan' },
+  { to: '/admin/accounts', icon: IconUsers, label: 'Tai khoan' },
   { to: '/admin/keys', icon: IconKey, label: 'API Key' },
-  { to: '/admin/logs', icon: IconList, label: 'Nhật ký' },
-  { to: '/admin/config', icon: IconSettings, label: 'Cấu hình' },
-  { to: '/admin/proxy', icon: IconGlobe, label: 'Proxy' },
+  { to: '/admin/update', icon: IconRefresh, label: 'Cap nhat' },
+  { to: '/admin/about', icon: IconSparkles, label: 'Tac gia' },
+  { to: '/admin/config', icon: IconSettings, label: 'Cau hinh' },
 ];
 
 const TITLES: Record<string, string> = {
-  '/admin': 'Tổng quan',
-  '/admin/accounts': 'Tài khoản DeepSeek',
+  '/admin': 'Tong quan',
+  '/admin/accounts': 'Tai khoan DeepSeek',
   '/admin/keys': 'API Key',
-  '/admin/docs': 'Hướng dẫn sử dụng',
-  '/admin/models': 'Mô hình',
-  '/admin/logs': 'Nhật ký',
-  '/admin/config': 'Cấu hình',
-  '/admin/proxy': 'Quản lý Proxy',
+  '/admin/docs': 'Huong dan su dung',
+  '/admin/update': 'Cap nhat he thong',
+  '/admin/about': 'Tac gia va phat hanh',
+  '/admin/models': 'Mo hinh',
+  '/admin/logs': 'Nhat ky',
+  '/admin/config': 'Cau hinh',
+  '/admin/proxy': 'Quan ly Proxy',
 };
 
 export default function Layout() {

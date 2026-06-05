@@ -11,6 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
 COPY web/dist ./web_dist
+COPY scripts ./scripts
+COPY VERSION ./VERSION
 
 ENV DATA_DIR=/app/data
 EXPOSE 22218

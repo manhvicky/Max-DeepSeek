@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "channel": "stable",
+  "published_at": "2026-06-01T00:00:00Z",
+  "download_url": "https://github.com/manhvicky/Max-DeepSeek/releases/latest",
+  "release_url": "https://github.com/manhvicky/Max-DeepSeek/releases/latest",
+  "changelog": [
+    "Dashboard co trang Cap nhat va Tac gia.",
+    "Bo sung API check/apply/rollback update va lich su cap nhat.",
+    "Them script update.sh va rollback.sh de van hanh giong 9router."
+  ],
+  "notes": "Manifest mau cho release cong khai. Co the host tren GitHub raw hoac GitHub Pages.",
+  "author": {
+    "name": "Vu Duy Manh",
+    "email": "manhq7@gmail.com"
+  }
+}

@@ -148,6 +148,25 @@ python3 scripts/smoke_test.py
 - [ ] README, license, screenshot/dashboard docs day du
 - [ ] Tao tag/release note va mo ta ro cach deploy
 
+## Cap nhat giong 9router
+
+- Dashboard co muc `Cap nhat` de xem version hien tai, version moi, changelog, lenh update va rollback
+- Neu bat `MAX_DEEPSEEK_ALLOW_SELF_UPDATE=1`, admin co the bam cap nhat/rollback ngay trong giao dien
+- Neu de mac dinh `0`, giao dien van hien lenh copy-paste an toan:
+
+```bash
+bash scripts/update.sh
+bash scripts/rollback.sh
+```
+
+- Manifest mau de public release metadata: `docs/update-manifest.example.json`
+- Neu muon check ban moi online, set `MAX_DEEPSEEK_UPDATE_MANIFEST_URL` tro toi file JSON raw tren GitHub/GitHub Pages
+
+## Tac gia
+
+- Vu Duy Manh
+- manhq7@gmail.com
+
 ## License
 
 MIT

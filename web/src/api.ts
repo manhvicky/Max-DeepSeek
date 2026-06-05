@@ -37,20 +37,17 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
 
   if (!res.ok) {
     const detail = (data && typeof data === 'object' && 'detail' in data)
-      ? (data as { detail: string }).detail : `Lỗi ${res.status}`;
-    throw new Error(typeof detail === 'string' ? detail : `Lỗi ${res.status}`);
+      ? (data as { detail: string }).detail : `Loi ${res.status}`;
+    throw new Error(typeof detail === 'string' ? detail : `Loi ${res.status}`);
   }
   return data as T;
 }
 
 export const api = {
-  // auth
   login: (password: string) => req<{ token: string }>('POST', '/login', { password }),
   setup: (password: string) => req<{ token: string }>('POST', '/setup', { password }),
-  // status & stats
   status: () => req<StatusResp>('GET', '/status'),
   stats: () => req<StatsResp>('GET', '/stats'),
-  // accounts
   accounts: () => req<Account[]>('GET', '/accounts'),
   addAccount: (a: AccountInput) => req<{ id: number }>('POST', '/accounts', a),
   delAccount: (id: number) => req<{ ok: boolean }>('DELETE', `/accounts/${id}`),
@@ -59,19 +56,21 @@ export const api = {
   enableAccount: (id: number, enabled: boolean) => req<{ ok: boolean; enabled: boolean }>('POST', `/accounts/${id}/enable`, { enabled }),
   disableBusyAccounts: () => req<{ ok: boolean; count: number; ids: number[] }>('POST', '/accounts/disable-busy'),
   disableBlockedAccounts: () => req<{ ok: boolean; count: number; ids: number[] }>('POST', '/accounts/disable-blocked'),
-  // keys
   keys: () => req<ApiKey[]>('GET', '/keys'),
   addKey: (description: string) => req<{ id: number; key: string }>('POST', '/keys', { description }),
   delKey: (id: number) => req<{ ok: boolean }>('DELETE', `/keys/${id}`),
-  // logs
   logs: (limit = 100) => req<LogEntry[]>('GET', `/logs?limit=${limit}`),
-  // config
   getConfig: () => req<ConfigResp>('GET', '/config'),
   saveConfig: (c: ConfigInput) => req<{ ok: boolean }>('POST', '/config', c),
   models: () => req<{ data: { id: string }[] }>('GET', '/models'),
+  appInfo: () => req<AppInfoResp>('GET', '/app'),
+  updateStatus: () => req<UpdateStatusResp>('GET', '/update/status'),
+  checkUpdate: () => req<UpdateStatusResp>('POST', '/update/check'),
+  applyUpdate: (version?: string) => req<UpdateActionResp>('POST', '/update/apply', { version }),
+  rollbackUpdate: () => req<UpdateActionResp>('POST', '/update/rollback'),
+  updateHistory: (limit = 20) => req<UpdateHistoryItem[]>('GET', `/update/history?limit=${limit}`),
 };
 
-// ── Types ─────────────────────────────────────────
 export interface StatusResp {
   total: number; idle: number; busy: number; error: number; invalid: number;
   cooling?: number; enabled?: number; disabled?: number; quarantined?: number; next_ready_in?: number; health?: string;
@@ -137,4 +136,44 @@ export interface ConfigInput {
   tool_call_extra_starts?: string[]; tool_call_extra_ends?: string[]; cors_origins?: string[];
   healthcheck_on_login?: boolean; init_concurrency?: number; recovery_interval?: number;
   acquire_timeout_ms?: number; max_attempts?: number; min_account_interval_ms?: number;
+}
+export interface AppInfoResp {
+  name: string;
+  version: string;
+  repository: string;
+  channel: string;
+  author: { name: string; email: string };
+}
+export interface UpdateStatusResp {
+  current_version: string;
+  latest_version: string;
+  update_available: boolean;
+  channel: string;
+  published_at: string;
+  download_url: string;
+  release_url: string;
+  changelog: string[];
+  notes: string;
+  author: { name: string; email: string };
+  allow_self_update: boolean;
+  update_command: string;
+  rollback_command: string;
+}
+export interface UpdateActionResp extends UpdateStatusResp {
+  ok: boolean;
+  status: string;
+  message: string;
+  target_version?: string;
+}
+export interface UpdateHistoryItem {
+  id: number;
+  action: string;
+  from_version: string;
+  to_version: string;
+  status: string;
+  notes: string;
+  command: string;
+  backup_path: string;
+  output: string;
+  created_at: number;
 }

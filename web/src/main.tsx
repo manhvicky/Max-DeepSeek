@@ -13,6 +13,8 @@ import LogsPage from './pages/LogsPage';
 import ConfigPage from './pages/ConfigPage';
 import DocsPage from './pages/DocsPage';
 import ProxyPage from './pages/ProxyPage';
+import UpdatePage from './pages/UpdatePage';
+import AboutPage from './pages/AboutPage';
 import './styles.css';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -34,6 +36,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path="accounts" element={<AccountsPage />} />
             <Route path="keys" element={<KeysPage />} />
             <Route path="docs" element={<DocsPage />} />
+            <Route path="update" element={<UpdatePage />} />
+            <Route path="about" element={<AboutPage />} />
             <Route path="models" element={<ModelsPage />} />
             <Route path="logs" element={<LogsPage />} />
             <Route path="config" element={<ConfigPage />} />

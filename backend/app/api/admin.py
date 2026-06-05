@@ -1,7 +1,13 @@
 """Admin API: login JWT, status, stats, accounts, api keys, logs, config."""
 from __future__ import annotations
 
+import json
+import os
+import shlex
+import subprocess
 import time
+from pathlib import Path
+from urllib.request import urlopen
 
 import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -462,6 +468,165 @@ async def save_config(req: ConfigReq, _: bool = Depends(require_admin)):
         await store.set_setting("admin_password_hash", crypto.hash_password(req.new_password))
     return {"ok": True}
 
+
+
+
+class UpdateApplyReq(BaseModel):
+    version: str | None = None
+
+
+def _version_path() -> Path:
+    return Path(__file__).resolve().parents[3] / "VERSION"
+
+
+def _current_version() -> str:
+    path = _version_path()
+    if path.exists():
+        value = path.read_text().strip()
+        if value:
+            return value
+    return config.APP_VERSION
+
+
+def _app_info() -> dict:
+    return {
+        "name": config.APP_NAME,
+        "version": _current_version(),
+        "repository": config.APP_REPOSITORY,
+        "channel": config.UPDATE_CHANNEL,
+        "author": {
+            "name": config.APP_AUTHOR_NAME,
+            "email": config.APP_AUTHOR_EMAIL,
+        },
+    }
+
+
+def _parse_semver(value: str) -> tuple[int, ...]:
+    parts = []
+    for item in value.strip().lstrip("v").split("."):
+        num = ''.join(ch for ch in item if ch.isdigit())
+        parts.append(int(num or 0))
+    return tuple(parts or [0])
+
+
+def _default_manifest() -> dict:
+    current = _current_version()
+    return {
+        "version": current,
+        "channel": config.UPDATE_CHANNEL,
+        "published_at": "",
+        "download_url": config.APP_REPOSITORY,
+        "release_url": config.APP_REPOSITORY,
+        "changelog": ["Ban dang o phien ban moi nhat."],
+        "notes": "Khong tim thay manifest tu xa. Dang dung metadata noi bo.",
+        "author": {
+            "name": config.APP_AUTHOR_NAME,
+            "email": config.APP_AUTHOR_EMAIL,
+        },
+    }
+
+
+def _load_update_manifest() -> dict:
+    manifest = _default_manifest()
+    url = (config.UPDATE_MANIFEST_URL or "").strip()
+    if not url:
+        return manifest
+    try:
+        with urlopen(url, timeout=config.UPDATE_CHECK_TIMEOUT) as res:
+            data = json.loads(res.read().decode("utf-8"))
+        if isinstance(data, dict):
+            manifest.update({k: v for k, v in data.items() if v not in (None, "")})
+    except Exception as exc:
+        manifest["notes"] = f"Khong the tai manifest: {exc}"
+    manifest.setdefault("author", {"name": config.APP_AUTHOR_NAME, "email": config.APP_AUTHOR_EMAIL})
+    return manifest
+
+
+def _update_status() -> dict:
+    current = _current_version()
+    manifest = _load_update_manifest()
+    latest = str(manifest.get("version") or current)
+    update_available = _parse_semver(latest) > _parse_semver(current)
+    return {
+        "current_version": current,
+        "latest_version": latest,
+        "update_available": update_available,
+        "channel": manifest.get("channel") or config.UPDATE_CHANNEL,
+        "published_at": manifest.get("published_at") or "",
+        "download_url": manifest.get("download_url") or config.APP_REPOSITORY,
+        "release_url": manifest.get("release_url") or config.APP_REPOSITORY,
+        "changelog": manifest.get("changelog") or [],
+        "notes": manifest.get("notes") or "",
+        "author": manifest.get("author") or {"name": config.APP_AUTHOR_NAME, "email": config.APP_AUTHOR_EMAIL},
+        "allow_self_update": config.ALLOW_SELF_UPDATE,
+        "update_command": config.UPDATE_COMMAND,
+        "rollback_command": config.ROLLBACK_COMMAND,
+    }
+
+
+def _run_update_command(command: str, env_extra: dict[str, str] | None = None) -> tuple[int, str]:
+    env = os.environ.copy()
+    env["MAX_DEEPSEEK_CURRENT_VERSION"] = _current_version()
+    if env_extra:
+        env.update(env_extra)
+    proc = subprocess.run(command, shell=True, capture_output=True, text=True, env=env, cwd=str(Path(__file__).resolve().parents[3]))
+    output = (proc.stdout or "") + ("\n" + proc.stderr if proc.stderr else "")
+    return proc.returncode, output.strip()
+
+
+@router.get("/app")
+async def app_info(_: bool = Depends(require_admin)):
+    return _app_info()
+
+
+@router.get("/update/status")
+async def get_update_status(_: bool = Depends(require_admin)):
+    return _update_status()
+
+
+@router.post("/update/check")
+async def check_update(_: bool = Depends(require_admin)):
+    status = _update_status()
+    await store.add_update_history(
+        action="check",
+        from_version=status["current_version"],
+        to_version=status["latest_version"],
+        status="available" if status["update_available"] else "up-to-date",
+        notes=status.get("notes", ""),
+    )
+    return status
+
+
+@router.get("/update/history")
+async def update_history(limit: int = 20, _: bool = Depends(require_admin)):
+    return await store.list_update_history(limit)
+
+
+@router.post("/update/apply")
+async def apply_update(req: UpdateApplyReq, _: bool = Depends(require_admin)):
+    status = _update_status()
+    target = (req.version or status["latest_version"]).strip()
+    if not config.ALLOW_SELF_UPDATE:
+        notes = "Self-update dang tat; hay dung lenh thu cong tu README."
+        await store.add_update_history("apply", status["current_version"], target, "blocked", notes=notes, command=config.UPDATE_COMMAND)
+        return {"ok": False, "status": "blocked", "message": notes, **status}
+    rc, output = _run_update_command(config.UPDATE_COMMAND, {"MAX_DEEPSEEK_TARGET_VERSION": target})
+    ok = rc == 0
+    await store.add_update_history("apply", status["current_version"], target, "success" if ok else "failed", command=config.UPDATE_COMMAND, output=output)
+    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Cap nhat thanh cong" if ok else "Cap nhat that bai"), **status, "target_version": target}
+
+
+@router.post("/update/rollback")
+async def rollback_update(_: bool = Depends(require_admin)):
+    status = _update_status()
+    if not config.ALLOW_SELF_UPDATE:
+        notes = "Self-update dang tat; rollback thu cong bang script."
+        await store.add_update_history("rollback", status["current_version"], status["current_version"], "blocked", notes=notes, command=config.ROLLBACK_COMMAND)
+        return {"ok": False, "status": "blocked", "message": notes}
+    rc, output = _run_update_command(config.ROLLBACK_COMMAND)
+    ok = rc == 0
+    await store.add_update_history("rollback", status["current_version"], status["current_version"], "success" if ok else "failed", command=config.ROLLBACK_COMMAND, output=output)
+    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Rollback thanh cong" if ok else "Rollback that bai")}
 
 # ── proxy (CF Worker URL) ────────────────────────────────────
 import httpx as _httpx

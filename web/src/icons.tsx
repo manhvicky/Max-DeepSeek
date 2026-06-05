@@ -60,3 +60,21 @@ export const IconZap = (p: SVGProps<SVGSVGElement>) => (
 export const IconGlobe = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
 );
+export const IconUpload = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M12 17V3"/><path d="m5 10 7-7 7 7"/><path d="M5 21h14"/></svg>
+);
+export const IconRotateCcw = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-9L1 10"/></svg>
+);
+export const IconGithub = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77 5.44 5.44 0 0 0 3.5 8.5c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+);
+export const IconMail = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+);
+export const IconSparkles = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="m12 3 1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4L12 3Z"/><path d="M5 19 6 17l1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/><path d="M19 15l.7 1.8L21.5 18l-1.8.7L19 20.5l-.7-1.8L16.5 18l1.8-.7L19 15Z"/></svg>
+);
+export const IconBookOpen = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+);

@@ -64,6 +64,18 @@ def main() -> int:
     ensure(status == 200 and isinstance(stats, dict), f"/admin/api/stats failed: {status} {stats}")
     print("ok /admin/api/stats")
 
+    status, app_info = request("GET", "/admin/api/app", token=token)
+    ensure(status == 200 and isinstance(app_info, dict) and bool(app_info.get("author", {}).get("email")), f"/admin/api/app failed: {status} {app_info}")
+    print("ok /admin/api/app")
+
+    status, update_status = request("GET", "/admin/api/update/status", token=token)
+    ensure(status == 200 and isinstance(update_status, dict) and update_status.get("current_version"), f"/admin/api/update/status failed: {status} {update_status}")
+    print("ok /admin/api/update/status")
+
+    status, update_check = request("POST", "/admin/api/update/check", token=token)
+    ensure(status == 200 and isinstance(update_check, dict) and bool(update_check.get("latest_version")), f"/admin/api/update/check failed: {status} {update_check}")
+    print("ok /admin/api/update/check")
+
     status, created = request("POST", "/admin/api/keys", {"description": "test-api"}, token=token)
     ensure(status == 200 and isinstance(created, dict) and bool(created.get("key")), f"create key failed: {status} {created}")
     key_id = int(created["id"])

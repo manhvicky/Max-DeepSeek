@@ -68,6 +68,18 @@ CREATE TABLE IF NOT EXISTS proxy_pool (
     is_active   INTEGER DEFAULT 0,
     created_at  INTEGER DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS update_history (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    action          TEXT DEFAULT '',
+    from_version    TEXT DEFAULT '',
+    to_version      TEXT DEFAULT '',
+    status          TEXT DEFAULT '',
+    notes           TEXT DEFAULT '',
+    command         TEXT DEFAULT '',
+    backup_path     TEXT DEFAULT '',
+    output          TEXT DEFAULT '',
+    created_at      INTEGER DEFAULT 0
+);
 """
 
 
@@ -142,6 +154,7 @@ async def _migrate() -> None:
         await db().execute("UPDATE api_keys SET key=?, key_hash=?, key_masked=? WHERE id=?", (masked, _hashlib.sha256(raw.encode()).hexdigest(), masked, row[0]))
     await db().execute("CREATE INDEX IF NOT EXISTS idx_proxy_daily_hits_date_key ON proxy_daily_hits(date, url_key)")
     await db().execute("CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON api_keys(key_hash)")
+    await db().execute("CREATE INDEX IF NOT EXISTS idx_update_history_created_at ON update_history(created_at)")
     await db().commit()
     # proxy_pool table
     await db().execute(
@@ -502,3 +515,23 @@ async def set_proxy_limit(url_key: str, limit: int) -> None:
         (limit, url_key),
     )
     await db().commit()
+
+
+
+# -- update history -------------------------------------------------
+async def add_update_history(action: str, from_version: str, to_version: str,
+                             status: str, notes: str = "", command: str = "",
+                             backup_path: str = "", output: str = "") -> int:
+    cur = await db().execute(
+        "INSERT INTO update_history(action,from_version,to_version,status,notes,command,backup_path,output,created_at) VALUES(?,?,?,?,?,?,?,?,?)",
+        (action, from_version, to_version, status, notes, command, backup_path, output, int(time.time())),
+    )
+    await db().commit()
+    return cur.lastrowid
+
+
+async def list_update_history(limit: int = 20) -> list[dict]:
+    async with db().execute(
+        "SELECT * FROM update_history ORDER BY id DESC LIMIT ?", (limit,)
+    ) as cur:
+        return [dict(r) for r in await cur.fetchall()]
