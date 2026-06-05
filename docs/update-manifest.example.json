@@ -5,13 +5,13 @@
   "download_url": "https://github.com/manhvicky/Max-DeepSeek/releases/latest",
   "release_url": "https://github.com/manhvicky/Max-DeepSeek/releases/latest",
   "changelog": [
-    "Dashboard co trang Cap nhat va Tac gia.",
-    "Bo sung API check/apply/rollback update va lich su cap nhat.",
-    "Them script update.sh va rollback.sh de van hanh giong 9router."
+    "Dashboard có trang Cập nhật và Tác giả.",
+    "Bổ sung API check/apply/rollback update và lịch sử cập nhật.",
+    "Thêm script update.sh và rollback.sh để vận hành giống 9router."
   ],
-  "notes": "Manifest mau cho release cong khai. Co the host tren GitHub raw hoac GitHub Pages.",
+  "notes": "Manifest mẫu cho release công khai. Có thể host trên GitHub raw hoặc GitHub Pages.",
   "author": {
-    "name": "Vu Duy Manh",
+    "name": "Vũ Duy Mạnh",
     "email": "manhq7@gmail.com"
   }
 }

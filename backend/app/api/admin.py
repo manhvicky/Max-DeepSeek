@@ -517,8 +517,8 @@ def _default_manifest() -> dict:
         "published_at": "",
         "download_url": config.APP_REPOSITORY,
         "release_url": config.APP_REPOSITORY,
-        "changelog": ["Ban dang o phien ban moi nhat."],
-        "notes": "Khong tim thay manifest tu xa. Dang dung metadata noi bo.",
+        "changelog": ["Bạn đang ở phiên bản mới nhất."],
+        "notes": "Không tìm thấy manifest từ xa. Đang dùng metadata nội bộ.",
         "author": {
             "name": config.APP_AUTHOR_NAME,
             "email": config.APP_AUTHOR_EMAIL,
@@ -537,7 +537,7 @@ def _load_update_manifest() -> dict:
         if isinstance(data, dict):
             manifest.update({k: v for k, v in data.items() if v not in (None, "")})
     except Exception as exc:
-        manifest["notes"] = f"Khong the tai manifest: {exc}"
+        manifest["notes"] = f"Không thể tải manifest: {exc}"
     manifest.setdefault("author", {"name": config.APP_AUTHOR_NAME, "email": config.APP_AUTHOR_EMAIL})
     return manifest
 
@@ -607,26 +607,26 @@ async def apply_update(req: UpdateApplyReq, _: bool = Depends(require_admin)):
     status = _update_status()
     target = (req.version or status["latest_version"]).strip()
     if not config.ALLOW_SELF_UPDATE:
-        notes = "Self-update dang tat; hay dung lenh thu cong tu README."
+        notes = "Self-update đang tắt; hãy dùng lệnh thủ công từ README."
         await store.add_update_history("apply", status["current_version"], target, "blocked", notes=notes, command=config.UPDATE_COMMAND)
         return {"ok": False, "status": "blocked", "message": notes, **status}
     rc, output = _run_update_command(config.UPDATE_COMMAND, {"MAX_DEEPSEEK_TARGET_VERSION": target})
     ok = rc == 0
     await store.add_update_history("apply", status["current_version"], target, "success" if ok else "failed", command=config.UPDATE_COMMAND, output=output)
-    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Cap nhat thanh cong" if ok else "Cap nhat that bai"), **status, "target_version": target}
+    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Cập nhật thành công" if ok else "Cập nhật thất bại"), **status, "target_version": target}
 
 
 @router.post("/update/rollback")
 async def rollback_update(_: bool = Depends(require_admin)):
     status = _update_status()
     if not config.ALLOW_SELF_UPDATE:
-        notes = "Self-update dang tat; rollback thu cong bang script."
+        notes = "Self-update đang tắt; rollback thủ công bằng script."
         await store.add_update_history("rollback", status["current_version"], status["current_version"], "blocked", notes=notes, command=config.ROLLBACK_COMMAND)
         return {"ok": False, "status": "blocked", "message": notes}
     rc, output = _run_update_command(config.ROLLBACK_COMMAND)
     ok = rc == 0
     await store.add_update_history("rollback", status["current_version"], status["current_version"], "success" if ok else "failed", command=config.ROLLBACK_COMMAND, output=output)
-    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Rollback thanh cong" if ok else "Rollback that bai")}
+    return {"ok": ok, "status": "success" if ok else "failed", "message": output or ("Rollback thành công" if ok else "Rollback thất bại")}
 
 # ── proxy (CF Worker URL) ────────────────────────────────────
 import httpx as _httpx
