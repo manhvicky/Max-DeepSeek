@@ -94,7 +94,7 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
         <div className="row" style={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap' }}>
           <div style={{ maxWidth: 760 }}>
             <div className="badge ok" style={{ marginBottom: 12 }}>OpenAI-compatible</div>
-            <h2 style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 8 }}>Hướng dẫn kết nối MaxDeepSeek</h2>
+            <h2 style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 8 }}>Hướng dẫn kết nối Max-DeepSeek</h2>
             <p style={{ color: 'var(--text-dim)', fontSize: 15, lineHeight: 1.7 }}>
               Dùng API key tạo trong trang này để kết nối Cursor, Cherry Studio, Open WebUI hoặc code riêng.
               Endpoint tương thích chuẩn OpenAI, chỉ cần đổi Base URL và API Key.

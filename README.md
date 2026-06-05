@@ -35,7 +35,7 @@ Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan Dee
 
 ## Cai dat nhanh
 
-Repo public: `https://github.com/manhvicky/MaxDeepSeek`
+Repo public: `https://github.com/manhvicky/Max-DeepSeek`
 
 Tai lieu lien quan:
 
@@ -45,8 +45,8 @@ Tai lieu lien quan:
 - Checklist release: `docs/RELEASE_CHECKLIST.md`
 
 ```bash
-git clone https://github.com/manhvicky/MaxDeepSeek.git
-cd MaxDeepSeek
+git clone https://github.com/manhvicky/Max-DeepSeek.git
+cd Max-DeepSeek
 cp .env.example .env
 docker compose -f docker/docker-compose.yml up -d --build
 ```
@@ -54,6 +54,12 @@ docker compose -f docker/docker-compose.yml up -d --build
 Mo dashboard: `http://localhost:22218/admin`
 
 Lan dau vao se yeu cau dat mat khau quan tri.
+
+Sau 3 buoc tren, ban se co:
+
+- dashboard admin de them tai khoan DeepSeek
+- endpoint OpenAI-compatible tai `http://localhost:22218/v1`
+- he thong API key rieng de cap cho app/client noi vao
 
 ## Quy trinh su dung
 
