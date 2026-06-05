@@ -17,6 +17,14 @@ Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan Dee
 
 _Giao dien tong quan cua dashboard admin sau khi dang nhap._
 
+![Docs page](docs/assets/dashboard-docs.png)
+
+_Trang Huong dan de noi Max-DeepSeek vao Cursor, Cherry Studio va app OpenAI-compatible._
+
+![Models page](docs/assets/dashboard-models.png)
+
+_Trang Mo hinh cho thay cac model expose qua gateway._
+
 - Tuong thich OpenAI: `/v1/models`, `/v1/chat/completions`, ho tro stream va non-stream
 - Pool tai khoan DeepSeek: login nen, xoay vong theo tai, cooldown/recovery khi account bi gioi han
 - Hien thi thong ke request, token, do tre, log va tinh trang account
@@ -152,10 +160,18 @@ Neu da co instance va muon test sau deploy:
 
 ```bash
 MAX_DEEPSEEK_URL=http://localhost:22218 \
-MAX_DEEPSEEK_ADMIN_PASSWORD='<ADMIN_PASSWORD>' \
-MAX_DEEPSEEK_API_KEY='<YOUR_API_KEY>' \
+MAX_DEEPSEEK_ADMIN_PASSWORD='***' \
+MAX_DEEPSEEK_API_KEY='***' \
 python3 scripts/smoke_test.py
 ```
+
+## Troubleshooting nhanh
+
+- Vao duoc dashboard nhung goi API loi `401`: kiem tra API key vua tao va header `Authorization: Bearer <key>`
+- Request hay `429` hoac bi mute: them nhieu tai khoan DeepSeek hon, dat proxy on dinh hon, giam tai request/account
+- Dashboard khong mo duoc tu may khac: kiem tra cong `22218`, reverse proxy va `CORS_ORIGINS`
+- Build web loi tren may moi: chay `cd web && npm install` de tao lai dependency theo `package-lock.json`
+- Sau deploy muon test nhanh: dung `python3 scripts/smoke_test.py` truoc khi cap cho nguoi khac su dung
 
 ## Known limitations
 
