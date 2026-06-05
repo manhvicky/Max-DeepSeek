@@ -1,0 +1,29 @@
+name: Feature request
+description: De xuat tinh nang hoac cai tien cho Max-DeepSeek
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Van de hien tai
+      placeholder: Ban dang gap han che gi?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: De xuat giai phap
+      placeholder: Ban muon Max-DeepSeek hoat dong nhu the nao?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Giai phap thay the da can nhac
+  - type: textarea
+    id: extra
+    attributes:
+      label: Bo sung
+      placeholder: Mockup, API, use case, deployment note...

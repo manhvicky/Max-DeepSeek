@@ -1,0 +1,62 @@
+name: Bug report
+description: Bao cao loi de tai hien va sua nhanh hon
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cam on ban da bao cao loi. Vui long dien du thong tin de de tai hien.
+  - type: input
+    id: version
+    attributes:
+      label: Phien ban
+      description: Vi du 1.0.0, commit hash hoac Docker image tag
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Mo ta ngan
+      placeholder: Loi xay ra la gi?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Cach tai hien
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ket qua mong doi
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Ket qua thuc te
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log hoac screenshot lien quan
+      render: shell
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Cach deploy
+      options:
+        - Docker Compose
+        - Local backend + web dev
+        - Khac
+    validations:
+      required: true

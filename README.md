@@ -4,6 +4,13 @@ Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan Dee
 
 > Muc dich chinh: tu host cho ca nhan/nhom nho. Truoc khi public instance cho nguoi khac dung, hay tu kiem tra dieu khoan dich vu cua DeepSeek va chinh sach cua ben proxy/upstream ban dang su dung.
 
+## Du an nay phu hop khi nao?
+
+- Ban muon expose mot API giong OpenAI cho tools/no-code/app noi bo
+- Ban can dashboard don gian de quan ly tai khoan, API key va logs
+- Ban uu tien tu host nhanh bang Docker Compose
+- Ban chap nhan day la mot self-hosted gateway do cong dong van hanh, khong phai dich vu managed
+
 ## Tinh nang
 
 - Tuong thich OpenAI: `/v1/models`, `/v1/chat/completions`, ho tro stream va non-stream
@@ -28,9 +35,18 @@ Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan Dee
 
 ## Cai dat nhanh
 
+Repo public: `https://github.com/manhvicky/MaxDeepSeek`
+
+Tai lieu lien quan:
+
+- Huong dan dong gop: `CONTRIBUTING.md`
+- Chinh sach bao mat: `SECURITY.md`
+- Ghi chu phat hanh: `CHANGELOG.md`
+- Checklist release: `docs/RELEASE_CHECKLIST.md`
+
 ```bash
-git clone https://github.com/manhvicky/Max-DeepSeek.git
-cd Max-DeepSeek
+git clone https://github.com/manhvicky/MaxDeepSeek.git
+cd MaxDeepSeek
 cp .env.example .env
 docker compose -f docker/docker-compose.yml up -d --build
 ```
@@ -137,6 +153,13 @@ python3 scripts/smoke_test.py
 - Doi API key sau khi deploy production
 - Dat mat khau admin manh va khong dung chung voi tai khoan DeepSeek
 - Backup `docker/data/` neu day la instance van hanh quan trong
+- Revoke token GitHub/PAT sau khi dung xong release neu da chia se trong kenh chat tam thoi
+
+## Dong gop va ho tro
+
+- Neu muon gui PR, doc `CONTRIBUTING.md`
+- Neu phat hien loi bao mat, doc `SECURITY.md`
+- Neu muon public release metadata cho trang `Cap nhat`, tham khao `docs/update-manifest.example.json`
 
 ## Release checklist
 
