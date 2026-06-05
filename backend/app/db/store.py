@@ -127,7 +127,21 @@ async def _migrate() -> None:
     await db().execute("CREATE INDEX IF NOT EXISTS idx_request_logs_account_id ON request_logs(account_id)")
     await db().execute("CREATE INDEX IF NOT EXISTS idx_request_logs_proxy_id ON request_logs(proxy_id)")
     await db().execute("CREATE INDEX IF NOT EXISTS idx_request_logs_proxy_url ON request_logs(proxy_url)")
+    # hashed API keys for public releases; legacy plaintext keys are migrated lazily.
+    cols5 = await db().execute("PRAGMA table_info(api_keys)")
+    key_cols = {r[1] for r in await cols5.fetchall()}
+    if "key_hash" not in key_cols:
+        await db().execute("ALTER TABLE api_keys ADD COLUMN key_hash TEXT DEFAULT ''")
+    if "key_masked" not in key_cols:
+        await db().execute("ALTER TABLE api_keys ADD COLUMN key_masked TEXT DEFAULT ''")
+    rows = await db().execute("SELECT id, key FROM api_keys WHERE key_hash='' AND key!=''")
+    import hashlib as _hashlib
+    for row in await rows.fetchall():
+        raw = row[1]
+        masked = raw[:8] + "..." + raw[-4:] if len(raw) > 14 else raw[:6] + "..."
+        await db().execute("UPDATE api_keys SET key=?, key_hash=?, key_masked=? WHERE id=?", (masked, _hashlib.sha256(raw.encode()).hexdigest(), masked, row[0]))
     await db().execute("CREATE INDEX IF NOT EXISTS idx_proxy_daily_hits_date_key ON proxy_daily_hits(date, url_key)")
+    await db().execute("CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON api_keys(key_hash)")
     await db().commit()
     # proxy_pool table
     await db().execute(
@@ -171,6 +185,13 @@ async def set_setting(key: str, value: Any) -> None:
 async def list_accounts() -> list[dict]:
     async with db().execute("SELECT * FROM accounts ORDER BY id") as cur:
         return [dict(r) for r in await cur.fetchall()]
+
+
+async def account_request_counts() -> dict[int, int]:
+    async with db().execute(
+        "SELECT account_id, COUNT(*) FROM request_logs WHERE account_id IS NOT NULL GROUP BY account_id"
+    ) as cur:
+        return {int(row[0]): int(row[1]) for row in await cur.fetchall()}
 
 
 async def add_account(email: str, mobile: str, area_code: str,
@@ -248,15 +269,21 @@ async def list_api_keys() -> list[dict]:
             (row["id"],),
         ) as cur:
             last = await cur.fetchone()
+        row["key"] = row.get("key_masked") or (_mask_key(row.get("key") or "") if row.get("key") else "")
         row["last_proxy_url"] = last["proxy_url"] if last else ""
         row["last_proxy_name"] = last["proxy_name"] if last else ""
     return rows
 
 
+def _mask_key(key: str) -> str:
+    return key[:8] + "..." + key[-4:] if len(key) > 14 else key[:6] + "..."
+
+
 async def add_api_key(key: str, description: str) -> int:
+    from app.core import crypto
     cur = await db().execute(
-        "INSERT INTO api_keys(key,description,is_active,created_at) VALUES(?,?,1,?)",
-        (key, description, int(time.time())),
+        "INSERT INTO api_keys(key,key_hash,key_masked,description,is_active,created_at) VALUES(?,?,?,?,1,?)",
+        (_mask_key(key), crypto.hash_api_key(key), _mask_key(key), description, int(time.time())),
     )
     await db().commit()
     return cur.lastrowid
@@ -268,15 +295,19 @@ async def delete_api_key(key_id: int) -> None:
 
 
 async def api_key_valid(key: str) -> bool:
+    from app.core import crypto
+    key_hash = crypto.hash_api_key(key)
     async with db().execute(
-        "SELECT 1 FROM api_keys WHERE key=? AND is_active=1", (key,)
+        "SELECT 1 FROM api_keys WHERE (key_hash=? OR key=?) AND is_active=1", (key_hash, key)
     ) as cur:
         return await cur.fetchone() is not None
 
 
 async def get_api_key_id(key: str) -> int | None:
     """Lấy ID của API key."""
-    async with db().execute("SELECT id FROM api_keys WHERE key=?", (key,)) as cur:
+    from app.core import crypto
+    key_hash = crypto.hash_api_key(key)
+    async with db().execute("SELECT id FROM api_keys WHERE key_hash=? OR key=?", (key_hash, key)) as cur:
         row = await cur.fetchone()
         return row[0] if row else None
 

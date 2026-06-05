@@ -44,5 +44,9 @@ def random_secret(nbytes: int = 32) -> str:
     return base64.urlsafe_b64encode(os.urandom(nbytes)).decode().rstrip("=")
 
 
+def hash_api_key(key: str) -> str:
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
 def new_api_key() -> str:
     return "sk-" + os.urandom(24).hex()

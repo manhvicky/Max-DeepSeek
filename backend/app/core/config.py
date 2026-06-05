@@ -47,7 +47,12 @@ MAX_OUTPUT_TOKENS = {"default": 384_000, "expert": 384_000, "vision": 384_000}
 MODEL_ALIASES: dict[str, str] = {}
 TOOL_CALL_EXTRA_STARTS = ["<|tool_call_begin|>", "<tool_calls>", "<tool_call>"]
 TOOL_CALL_EXTRA_ENDS = ["<|tool_call_end|>", "</tool_calls>", "</tool_call>"]
-CORS_ORIGINS = [os.getenv("CORS_ORIGIN", "http://localhost:22218")]
+def _csv_env(name: str, default: str) -> list[str]:
+    values = [x.strip() for x in os.getenv(name, default).split(",")]
+    return [x for x in values if x]
+
+CORS_ORIGINS = _csv_env("CORS_ORIGINS", os.getenv("CORS_ORIGIN", "http://localhost:22218"))
+ADMIN_JWT_EXPIRE_SECONDS = int(os.getenv("ADMIN_JWT_EXPIRE_SECONDS", "86400"))
 
 # ── Server ───────────────────────────────────────────────────
 PORT = int(os.getenv("PORT", "22218"))
@@ -60,3 +65,4 @@ WASM_CACHE = os.path.join(DATA_DIR, "pow.wasm")
 # Mặc định KHÔNG chat-test khi startup/recovery để tránh tự làm account bị mute/rate-limit.
 HEALTHCHECK_ON_LOGIN = os.getenv("DS_HEALTHCHECK_ON_LOGIN", "0").lower() in ("1", "true", "yes")
 HEALTHCHECK_PROMPT = "只回复`Hello, world!`"
+

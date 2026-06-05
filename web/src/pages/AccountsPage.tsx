@@ -18,7 +18,7 @@ function fmtCooldown(secs?: number): string {
 const COLS_KEY = 'mds_accounts_view';
 const SORT_KEY = 'mds_accounts_sort';
 type ViewMode = 'list' | '2' | '3';
-type SortState = 'none' | 'active' | 'inactive' | 'email-asc' | 'email-desc' | 'label-asc' | 'label-desc';
+type SortState = 'none' | 'active' | 'inactive' | 'email-asc' | 'email-desc' | 'label-asc' | 'label-desc' | 'request-asc' | 'request-desc';
 
 const STATE_ORDER: Record<string, number> = { idle: 0, busy: 1, cooling: 2, error: 3, invalid: 4 };
 
@@ -70,10 +70,10 @@ export default function AccountsPage() {
   };
 
   // sort logic
-  const cycleColSort = (col: "email" | "label") => {
+  const cycleColSort = (col: "email" | "label" | "request") => {
     setSortP(sort === `${col}-asc` ? `${col}-desc` as SortState : sort === `${col}-desc` ? "none" : `${col}-asc` as SortState);
   };
-  const colSortIcon = (col: "email" | "label") => {
+  const colSortIcon = (col: "email" | "label" | "request") => {
     if (sort === `${col}-asc`) return " ↑";
     if (sort === `${col}-desc`) return " ↓";
     return "";
@@ -94,6 +94,11 @@ export default function AccountsPage() {
       const la = (a.label || "").toLowerCase();
       const lb = (b.label || "").toLowerCase();
       return sort === "label-asc" ? la.localeCompare(lb) : lb.localeCompare(la);
+    }
+    if (sort === "request-asc" || sort === "request-desc") {
+      const ra = a.request_count || 0;
+      const rb = b.request_count || 0;
+      return sort === "request-asc" ? ra - rb : rb - ra;
     }
     return 0;
   });
@@ -347,6 +352,13 @@ export default function AccountsPage() {
                 >
                   Trạng thái{sortIcon}
                 </th>
+                <th
+                  style={{ cursor: "pointer", userSelect: "none", whiteSpace: "nowrap", textAlign: "right" }}
+                  onClick={() => cycleColSort("request")}
+                  title="Bấm để sắp xếp theo số request"
+                >
+                  Request{colSortIcon("request")}
+                </th>
                 <th>Lỗi</th>
                 <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <div className="row" style={{ gap: 6, justifyContent: 'flex-end' }}>
@@ -374,6 +386,7 @@ export default function AccountsPage() {
                     <td>
                       <span className={`badge ${a.state}`}>{STATE_LABEL[a.state] || a.state}</span>
                     </td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>{a.request_count || 0}</td>
                     <td style={{ color: 'var(--text-muted)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {a.last_error || '—'}
                     </td>
@@ -399,6 +412,7 @@ export default function AccountsPage() {
                   {!on ? <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>· đã tắt</span> : null}
                 </div>
                 {a.label ? <div className="acc-card-label">{a.label}</div> : null}
+                <div className="acc-card-label">Request: <b>{a.request_count || 0}</b></div>
                 {a.last_error ? (
                   <div className="acc-card-err" title={a.last_error}>{a.last_error}</div>
                 ) : null}
@@ -414,30 +428,42 @@ export default function AccountsPage() {
   );
 }
 
+
+type AccountRowDraft = { email: string; password: string; label: string };
+
 function AddModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => void }) {
-  const [tab, setTab] = useState<'email' | 'mobile'>('email');
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [areaCode, setAreaCode] = useState('+84');
-  const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('');
+  const emptyRow = (): AccountRowDraft => ({ email: '', password: '', label: '' });
+  const [rows, setRows] = useState<AccountRowDraft[]>([emptyRow()]);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
+  const updateRow = (index: number, field: keyof AccountRowDraft, value: string) => {
+    setRows((current) => current.map((row, i) => i === index ? { ...row, [field]: value } : row));
+  };
+
+  const addRow = () => setRows((current) => [...current, emptyRow()]);
+  const removeRow = (index: number) => {
+    setRows((current) => current.length === 1 ? current : current.filter((_, i) => i !== index));
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password) { toast('Nhập mật khẩu', 'err'); return; }
-    if (tab === 'email' && !email) { toast('Nhập email', 'err'); return; }
-    if (tab === 'mobile' && !mobile) { toast('Nhập số điện thoại', 'err'); return; }
+    const validRows = rows
+      .map((row) => ({ email: row.email.trim(), password: row.password.trim(), label: row.label.trim() }))
+      .filter((row) => row.email || row.password || row.label);
+
+    if (validRows.length === 0) { toast('Nhập ít nhất 1 tài khoản', 'err'); return; }
+    const missingIndex = validRows.findIndex((row) => !row.email || !row.password);
+    if (missingIndex >= 0) { toast(`Dòng ${missingIndex + 1}: cần nhập email và mật khẩu`, 'err'); return; }
+
     setLoading(true);
     try {
-      await api.addAccount({
-        email: tab === 'email' ? email : '',
-        mobile: tab === 'mobile' ? mobile : '',
-        area_code: tab === 'mobile' ? areaCode : '',
-        password, label,
-      });
-      toast('Đã thêm tài khoản, đang đăng nhập nền...', 'ok');
+      let added = 0;
+      for (const row of validRows) {
+        await api.addAccount({ email: row.email, password: row.password, label: row.label });
+        added += 1;
+      }
+      toast(`Đã thêm ${added} tài khoản, đang đăng nhập nền...`, 'ok');
       onAdded(); onClose();
     } catch (e) { toast(e instanceof Error ? e.message : 'Lỗi thêm', 'err'); }
     finally { setLoading(false); }
@@ -445,44 +471,31 @@ function AddModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => vo
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+      <form className="modal modal-wide" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <h3>Thêm tài khoản DeepSeek</h3>
-        <div className="row mb-20" style={{ gap: 8 }}>
-          <button type="button" className={`btn btn-sm ${tab === 'email' ? 'btn-primary' : ''}`} onClick={() => setTab('email')}>Email</button>
-          <button type="button" className={`btn btn-sm ${tab === 'mobile' ? 'btn-primary' : ''}`} onClick={() => setTab('mobile')}>Số điện thoại</button>
-        </div>
-        {tab === 'email' ? (
-          <div className="field">
-            <label>Email</label>
-            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" autoFocus />
+        <p className="modal-note">Nhập mỗi tài khoản trên một hàng. Mật khẩu được ẩn mặc định để tránh lộ khi chia sẻ màn hình.</p>
+        <div className="bulk-account-list">
+          <div className="bulk-account-head">
+            <span>Email</span><span>Mật khẩu</span><span>Nhãn</span><span></span>
           </div>
-        ) : (
-          <div className="grid-2" style={{ gridTemplateColumns: '90px 1fr' }}>
-            <div className="field">
-              <label>Mã vùng</label>
-              <input className="input" value={areaCode} onChange={(e) => setAreaCode(e.target.value)} placeholder="+84" />
+          {rows.map((row, index) => (
+            <div className="bulk-account-row" key={index}>
+              <input className="input" value={row.email} onChange={(e) => updateRow(index, 'email', e.target.value)} placeholder="email@example.com" autoFocus={index === 0} />
+              <input className="input" type="password" value={row.password} onChange={(e) => updateRow(index, 'password', e.target.value)} placeholder="Mật khẩu" />
+              <input className="input" value={row.label} onChange={(e) => updateRow(index, 'label', e.target.value)} placeholder="VD: acc 1" />
+              <button type="button" className="btn btn-sm" onClick={() => removeRow(index)} disabled={rows.length === 1 || loading}>Xóa</button>
             </div>
-            <div className="field">
-              <label>Số điện thoại</label>
-              <input className="input" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="912345678" autoFocus />
-            </div>
-          </div>
-        )}
-        <div className="field">
-          <label>Mật khẩu</label>
-          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mật khẩu DeepSeek" />
+          ))}
         </div>
-        <div className="field">
-          <label>Nhãn (tùy chọn)</label>
-          <input className="input" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="VD: tài khoản 1" />
-        </div>
+        <button type="button" className="btn btn-sm" onClick={addRow} disabled={loading}>+ Thêm hàng</button>
         <div className="modal-actions">
           <button type="button" className="btn" onClick={onClose}>Hủy</button>
           <button className="btn btn-primary" disabled={loading}>
-            {loading ? <span className="spinner" /> : 'Thêm'}
+            {loading ? <span className="spinner" /> : `Thêm ${rows.filter((r) => r.email || r.password || r.label).length || 1} tài khoản`}
           </button>
         </div>
       </form>
     </div>
   );
 }
+

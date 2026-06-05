@@ -7,10 +7,15 @@ venv/
 !.env.example
 backend/data/
 data/
+docker/data/
 web/node_modules/
 web/dist/
-backend/web_dist/assets/
+backend/web_dist/
 *.log
 .DS_Store
 *.bak.*
 *.tsbuildinfo
+*.db
+*.sqlite
+*.wasm
+testkey.txt

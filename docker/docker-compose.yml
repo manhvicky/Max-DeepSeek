@@ -10,6 +10,8 @@ services:
       - "22218:22218"
     volumes:
       - ./data:/app/data
+    env_file:
+      - ../.env
     environment:
       - DATA_DIR=/app/data
-      # - DS_PROXY_URL=http://host:port   # nếu IP máy chủ ở Mỹ, cần proxy non-US
+      # Values in ../.env are optional; these defaults keep Docker Compose one-command friendly.

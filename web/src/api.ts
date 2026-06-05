@@ -87,6 +87,7 @@ export interface Account {
   id: number; email: string; mobile: string; area_code: string;
   label: string; state: string; error_count: number; last_error: string;
   cooldown_remaining?: number;
+  request_count?: number;
   enabled?: boolean;
 }
 export interface AccountInput {

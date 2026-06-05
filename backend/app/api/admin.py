@@ -55,7 +55,8 @@ async def login(req: LoginReq):
     if not crypto.verify_password(req.password, pw_hash):
         raise HTTPException(401, "Sai mật khẩu")
     secret = await _jwt_secret()
-    token = jwt.encode({"sub": "admin", "iat": int(time.time())}, secret, algorithm=JWT_ALGO)
+    now = int(time.time())
+    token = jwt.encode({"sub": "admin", "iat": now, "exp": now + config.ADMIN_JWT_EXPIRE_SECONDS}, secret, algorithm=JWT_ALGO)
     return {"token": token}
 
 
@@ -68,7 +69,8 @@ async def setup(req: SetupReq):
         raise HTTPException(400, "Mật khẩu tối thiểu 6 ký tự")
     await store.set_setting("admin_password_hash", crypto.hash_password(req.password))
     secret = await _jwt_secret()
-    token = jwt.encode({"sub": "admin", "iat": int(time.time())}, secret, algorithm=JWT_ALGO)
+    now = int(time.time())
+    token = jwt.encode({"sub": "admin", "iat": now, "exp": now + config.ADMIN_JWT_EXPIRE_SECONDS}, secret, algorithm=JWT_ALGO)
     return {"token": token}
 
 
@@ -112,6 +114,7 @@ class AccountReq(BaseModel):
 async def get_accounts(request: Request, _: bool = Depends(require_admin)):
     pool = request.app.state.pool
     rows = await store.list_accounts()
+    request_counts = await store.account_request_counts()
     state_map = {}
     if pool:
         for a in pool.all():
@@ -125,6 +128,7 @@ async def get_accounts(request: Request, _: bool = Depends(require_admin)):
             "id": r["id"], "email": r["email"], "mobile": r["mobile"],
             "area_code": r["area_code"], "label": r["label"],
             "state": st, "error_count": ec, "last_error": le,
+            "request_count": request_counts.get(r["id"], 0),
             "cooldown_remaining": cd,
             "quarantine_remaining": max(0, qd),
             "enabled": bool(r["enabled"]) if "enabled" in r.keys() else True,

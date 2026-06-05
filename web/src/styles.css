@@ -173,8 +173,17 @@ tr:hover td { background: var(--card-hover); }
 .modal { background: var(--card); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 24px; width: 100%; max-width: 440px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-.modal h3 { font-size: 18px; margin-bottom: 18px; }
+.modal-wide { max-width: 860px; }
+.modal h3 { font-size: 18px; margin-bottom: 8px; }
+.modal-note { color: var(--text-muted); font-size: 13px; margin-bottom: 18px; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+.bulk-account-list { display: grid; gap: 10px; margin-bottom: 12px; }
+.bulk-account-head, .bulk-account-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 64px; gap: 10px; align-items: center; }
+.bulk-account-head { color: var(--text-dim); font-size: 12px; font-weight: 600; padding: 0 2px; }
+@media (max-width: 720px) {
+  .bulk-account-head { display: none; }
+  .bulk-account-row { grid-template-columns: 1fr; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+}
 
 /* ── Login ──────────────────────────────────────── */
 .login-shell { min-height: 100vh; display: grid; place-items: center;
