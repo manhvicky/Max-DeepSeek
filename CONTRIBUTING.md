@@ -1,19 +1,19 @@
-# Contributing
+# Đóng góp
 
-Cam on ban da quan tam den Max-DeepSeek.
+Cảm ơn bạn đã quan tâm đến Max-DeepSeek.
 
-## Nguyen tac dong gop
+## Nguyên tắc đóng góp
 
-- Tao issue mo ta bug, regression hoac de xuat tinh nang truoc khi mo PR lon.
-- Giu thay doi nho, tap trung va co kha nang review.
-- Khong commit secret, token, database runtime, log hoac du lieu ca nhan.
-- Neu thay doi hanh vi API, hay cap nhat `README.md`, `.env.example` va test lien quan.
+- Tạo issue mô tả bug, regression hoặc đề xuất tính năng trước khi mở PR lớn.
+- Giữ thay đổi nhỏ, tập trung và có khả năng review.
+- Không commit secret, token, database runtime, log hoặc dữ liệu cá nhân.
+- Nếu thay đổi hành vi API, hãy cập nhật `README.md`, `.env.example` và test liên quan.
 
-## Quy trinh de xuat
+## Quy trình đề xuất
 
-1. Fork repo va tao branch moi tu `master`.
-2. Cai dat moi truong local theo huong dan trong `README.md`.
-3. Chay validate toi thieu truoc khi gui PR:
+1. Fork repo và tạo branch mới từ `master`.
+2. Cài đặt môi trường local theo hướng dẫn trong `README.md`.
+3. Chạy validate tối thiểu trước khi gửi PR:
 
 ```bash
 python3 -m compileall backend/app scripts tests
@@ -21,19 +21,19 @@ cd web && npm run build && cd ..
 python3 tests/test_api.py
 ```
 
-4. Neu thay doi giao dien, nen kem screenshot hoac gif ngan.
-5. Mo PR mo ta ro ly do thay doi, cach test va anh huong den deploy.
+4. Nếu thay đổi giao diện, nên kèm screenshot hoặc GIF ngắn.
+5. Mở PR mô tả rõ lý do thay đổi, cách test và ảnh hưởng đến deploy.
 
-## Pham vi uu tien cho PR
+## Phạm vi ưu tiên cho PR
 
-- Fix bug gay anh huong den self-hosted deployment
-- Cai thien tai lieu su dung/deploy
-- Them test cho hanh vi dang co
-- Nang cap bao mat ma khong pha vo setup hien tai
+- Fix bug gây ảnh hưởng đến self-hosted deployment
+- Cải thiện tài liệu sử dụng/deploy
+- Thêm test cho hành vi đang có
+- Nâng cấp bảo mật mà không phá vỡ setup hiện tại
 
-## Khong nen dua vao PR
+## Không nên đưa vào PR
 
-- Secret that, cookie, account DeepSeek that
+- Secret thật, cookie, tài khoản DeepSeek thật
 - File runtime trong `docker/data/`
 - Build artifact trong `web/dist/`
-- Thay doi unrelated lon khong co mo ta hoac test
+- Thay đổi unrelated lớn không có mô tả hoặc test

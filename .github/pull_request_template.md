@@ -1,15 +1,15 @@
-## Muc dich
+## Mục đích
 
-- mo ta ngan gon thay doi
+- mô tả ngắn gọn thay đổi
 
-## Kiem tra da chay
+## Kiểm tra đã chạy
 
 - [ ] `python3 -m compileall backend/app scripts tests`
 - [ ] `cd web && npm run build && cd ..`
 - [ ] `python3 tests/test_api.py`
 
-## Anh huong
+## Ảnh hưởng
 
-- [ ] Cap nhat README/docs neu can
-- [ ] Khong co secret/data runtime trong commit
-- [ ] Co screenshot neu thay doi UI
+- [ ] Cập nhật README/docs nếu cần
+- [ ] Không có secret/data runtime trong commit
+- [ ] Có screenshot nếu thay đổi UI

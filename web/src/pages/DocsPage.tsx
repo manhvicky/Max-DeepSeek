@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { api } from '../api';
+import { api, type AppInfoResp, type UpdateStatusResp } from '../api';
 import { useToast } from '../toast';
-import { IconCheck, IconKey, IconBox, IconZap, IconCopy } from '../icons';
+import { IconCheck, IconKey, IconBox, IconZap, IconCopy, IconSparkles, IconRefresh, IconMail, IconGithub } from '../icons';
 
 const BASE_URL = 'http://192.168.1.43:22218/v1';
 const CHAT_URL = 'http://192.168.1.43:22218/v1/chat/completions';
@@ -45,18 +45,32 @@ function Info({ label, value }: { label: string; value: string }) {
 export default function DocsPage() {
   const [apiKey, setApiKey] = useState(FALLBACK_KEY);
   const [hasKey, setHasKey] = useState(false);
+  const [info, setInfo] = useState<AppInfoResp | null>(null);
+  const [update, setUpdate] = useState<UpdateStatusResp | null>(null);
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
   const toast = useToast();
 
+  const load = async () => {
+    try {
+      const [keys, appInfo, updateStatus] = await Promise.all([
+        api.keys(),
+        api.appInfo(),
+        api.updateStatus(),
+      ]);
+      const first = keys.find((k) => k.is_active) || keys[0];
+      if (first?.key) {
+        setApiKey(first.key);
+        setHasKey(true);
+      }
+      setInfo(appInfo);
+      setUpdate(updateStatus);
+    } catch {
+      /* ignore */
+    }
+  };
+
   useEffect(() => {
-    api.keys()
-      .then((keys) => {
-        const first = keys.find((k) => k.is_active) || keys[0];
-        if (first?.key) {
-          setApiKey(first.key);
-          setHasKey(true);
-        }
-      })
-      .catch(() => {});
+    load();
   }, []);
 
   const aiPrompt = useMemo(() => `Hãy cấu hình ứng dụng AI của tôi dùng OpenAI-compatible API với thông tin sau:
@@ -68,7 +82,7 @@ Model suy luận sâu/thinking: deepseek-expert
 Model vision: deepseek-vision
 Chat endpoint đầy đủ: ${CHAT_URL}
 Models endpoint: ${MODELS_URL}
-Header: Authorization: Bearer ${apiKey}
+Header: Authorization: Bearer ***
 
 Yêu cầu:
 1. Nếu ứng dụng có mục Provider, chọn OpenAI hoặc OpenAI-compatible.
@@ -83,6 +97,19 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
   const copy = (text: string, message = 'Đã sao chép') => {
     navigator.clipboard.writeText(text);
     toast(message, 'ok');
+  };
+
+  const checkUpdateNow = async () => {
+    setCheckingUpdate(true);
+    try {
+      const next = await api.checkUpdate();
+      setUpdate(next);
+      toast(next.update_available ? 'Đã tìm thấy bản cập nhật mới' : 'Đang ở phiên bản mới nhất', 'ok');
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Không kiểm tra được cập nhật', 'err');
+    } finally {
+      setCheckingUpdate(false);
+    }
   };
 
   return (
@@ -105,9 +132,9 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
       </div>
 
       <div className="stat-grid mb-24">
-        <Step n={1} title="Thêm tài khoản DeepSeek" text="Vào Tài khoản DeepSeek, thêm email/số điện thoại + mật khẩu. Hệ thống tự đăng nhập và đưa account vào pool." />
-        <Step n={2} title="Tạo API Key" text="Vào API Key, bấm Tạo API Key. Sao chép key ngay vì key đầy đủ chỉ hiện một lần." />
-        <Step n={3} title="Kết nối ứng dụng" text="Trong app cần dùng AI, chọn OpenAI-compatible rồi nhập Base URL, API Key và model bên dưới." />
+        <Step n={1} title="Thêm tài khoản DeepSeek" text="Vào Tài khoản DeepSeek, thêm email hoặc số điện thoại cùng mật khẩu. Hệ thống sẽ tự đăng nhập và đưa tài khoản vào pool." />
+        <Step n={2} title="Tạo API Key" text="Vào API Key, bấm Tạo API Key. Hãy sao chép key ngay vì key đầy đủ chỉ hiện một lần." />
+        <Step n={3} title="Kết nối ứng dụng" text="Trong ứng dụng cần dùng AI, chọn OpenAI-compatible rồi nhập Base URL, API Key và model bên dưới." />
       </div>
 
       <div className="grid-2 mb-24" style={{ alignItems: 'start' }}>
@@ -117,7 +144,7 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
           <Info label="Chat endpoint" value={CHAT_URL} />
           <Info label="Models endpoint" value={MODELS_URL} />
           <Info label="API Key đang dùng" value={apiKey} />
-          <Info label="Header" value={`Authorization: Bearer ${apiKey}`} />
+          <Info label="Header" value="Authorization: Bearer ***" />
           <Info label="Định dạng" value="OpenAI Chat Completions" />
         </div>
         <div className="card">
@@ -126,30 +153,30 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
           <Info label="Suy luận sâu" value="deepseek-expert" />
           <Info label="Đa phương thức" value="deepseek-vision" />
           <p style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.7, marginTop: 12 }}>
-            Nếu app chỉ cho nhập một model, dùng <span className="code-pill">deepseek-default</span> trước. Khi cần thinking, đổi sang <span className="code-pill">deepseek-expert</span>.
+            Nếu ứng dụng chỉ cho nhập một model, hãy dùng <span className="code-pill">deepseek-default</span> trước. Khi cần thinking, đổi sang <span className="code-pill">deepseek-expert</span>.
           </p>
         </div>
       </div>
 
       <div className="card mb-24">
-        <div className="card-title"><IconCheck width={16} height={16} /> Cấu hình Cursor / Cherry Studio / Open WebUI</div>
+        <div className="card-title"><IconCheck width={16} height={16} /> Cấu hình Cursor, Cherry Studio, Open WebUI</div>
         <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
           <div>
             <div style={{ fontWeight: 650, marginBottom: 8 }}>Cursor</div>
             <p style={{ color: 'var(--text-dim)', lineHeight: 1.7 }}>
-              Settings → Models → Add OpenAI-compatible provider. Điền Base URL <span className="code-pill">{BASE_URL}</span>, API key đã tạo, model <span className="code-pill">deepseek-default</span>.
+              Vào Settings → Models → Add OpenAI-compatible provider. Điền Base URL <span className="code-pill">{BASE_URL}</span>, API key đã tạo và model <span className="code-pill">deepseek-default</span>.
             </p>
           </div>
           <div>
             <div style={{ fontWeight: 650, marginBottom: 8 }}>Cherry Studio</div>
             <p style={{ color: 'var(--text-dim)', lineHeight: 1.7 }}>
-              Providers → Add Provider → OpenAI. API Host nhập <span className="code-pill">{BASE_URL}</span>, API Key nhập key, model nhập thủ công nếu chưa tự hiện.
+              Vào Providers → Add Provider → OpenAI. API Host nhập <span className="code-pill">{BASE_URL}</span>, API Key nhập key, model có thể nhập thủ công nếu chưa tự hiện.
             </p>
           </div>
           <div>
             <div style={{ fontWeight: 650, marginBottom: 8 }}>Open WebUI / LibreChat</div>
             <p style={{ color: 'var(--text-dim)', lineHeight: 1.7 }}>
-              Thêm connection OpenAI-compatible. Base URL dùng <span className="code-pill">{BASE_URL}</span>. Nếu app yêu cầu endpoint gốc, không thêm <span className="code-pill">/chat/completions</span>.
+              Thêm kết nối OpenAI-compatible. Base URL dùng <span className="code-pill">{BASE_URL}</span>. Nếu ứng dụng yêu cầu endpoint gốc, không thêm <span className="code-pill">/chat/completions</span>.
             </p>
           </div>
         </div>
@@ -159,7 +186,7 @@ ${hasKey ? '' : MASK_NOTE}`.trim(), [apiKey, hasKey]);
         <div className="card">
           <div className="card-title">Ví dụ curl</div>
           <CodeBlock>{`curl ${CHAT_URL} \\
-  -H "Authorization: Bearer ${apiKey}" \\
+  -H "Authorization: Bearer <API_KEY>" \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "deepseek-default",
@@ -191,7 +218,7 @@ print(resp.choices[0].message.content)`}</CodeBlock>
           <div>
             <div className="card-title" style={{ marginBottom: 6 }}><IconCopy width={16} height={16} /> Prompt đưa cho AI cài nhanh</div>
             <p style={{ color: 'var(--text-dim)', lineHeight: 1.7 }}>
-              Sao chép ô này rồi gửi cho AI/Copilot/Cursor để nó tự cấu hình provider cho anh.
+              Sao chép khối này rồi gửi cho AI, Copilot hoặc Cursor để nó tự cấu hình provider cho anh.
             </p>
           </div>
           <button className="btn btn-primary" onClick={() => copy(aiPrompt, 'Đã sao chép prompt cài nhanh')}>
@@ -201,18 +228,64 @@ print(resp.choices[0].message.content)`}</CodeBlock>
         <CodeBlock>{aiPrompt}</CodeBlock>
         {!hasKey && (
           <p style={{ color: 'var(--yellow)', fontSize: 13, marginTop: 10 }}>
-            Chưa tìm thấy API key hoạt động. Vào trang API Key tạo key trước, rồi quay lại đây.
+            Chưa tìm thấy API key đang hoạt động. Vào trang API Key tạo key trước, rồi quay lại đây.
           </p>
         )}
+      </div>
+
+      <div className="grid-2 mb-24" style={{ alignItems: 'start' }}>
+        <div className="card">
+          <div className="card-title"><IconSparkles width={16} height={16} /> Thông tin tác giả</div>
+          <Info label="Tên tác giả" value={info?.author.name || 'Vũ Duy Mạnh'} />
+          <Info label="Email" value={info?.author.email || 'manhq7@gmail.com'} />
+          <Info label="Dự án" value={info?.name || 'Max-DeepSeek'} />
+          <Info label="Repository" value={info?.repository || 'https://github.com/manhvicky/Max-DeepSeek'} />
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 14 }}>
+            <button className="btn btn-sm" onClick={() => copy(info?.repository || 'https://github.com/manhvicky/Max-DeepSeek', 'Đã sao chép link GitHub')}>
+              <IconGithub width={14} height={14} /> Sao chép GitHub
+            </button>
+            <button className="btn btn-sm" onClick={() => copy(info?.author.email || 'manhq7@gmail.com', 'Đã sao chép email')}>
+              <IconMail width={14} height={14} /> Sao chép email
+            </button>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="spread mb-20" style={{ gap: 12, flexWrap: 'wrap' }}>
+            <div className="card-title" style={{ marginBottom: 0 }}><IconRefresh width={16} height={16} /> Cập nhật hệ thống</div>
+            <span className={`badge ${update?.update_available ? 'busy' : 'ok'}`}>
+              {update?.update_available ? 'Có bản mới' : 'Đang ở bản mới nhất'}
+            </span>
+          </div>
+          <Info label="Phiên bản hiện tại" value={update?.current_version || info?.version || '1.0.0'} />
+          <Info label="Phiên bản mới nhất" value={update?.latest_version || '1.0.0'} />
+          <Info label="Kênh phát hành" value={update?.channel || info?.channel || 'stable'} />
+          <Info label="Nguồn cập nhật" value={update?.release_url || info?.repository || 'GitHub'} />
+          {update?.notes ? (
+            <p className="soft-note" style={{ marginTop: 14 }}>{update.notes}</p>
+          ) : (
+            <p className="soft-note" style={{ marginTop: 14 }}>
+              Nếu chưa cấu hình manifest từ xa, hệ thống sẽ dùng metadata nội bộ để hiển thị phiên bản hiện tại.
+            </p>
+          )}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 14 }}>
+            <button className="btn btn-primary" onClick={checkUpdateNow} disabled={checkingUpdate}>
+              <IconRefresh width={15} height={15} /> {checkingUpdate ? 'Đang kiểm tra...' : 'Kiểm tra cập nhật'}
+            </button>
+            <button className="btn" onClick={() => copy(update?.release_url || info?.repository || 'https://github.com/manhvicky/Max-DeepSeek', 'Đã sao chép liên kết phát hành')}>
+              <IconCopy width={15} height={15} /> Sao chép liên kết phát hành
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="card">
         <div className="card-title">Lưu ý vận hành</div>
         <ul style={{ color: 'var(--text-dim)', lineHeight: 1.9, paddingLeft: 18 }}>
-          <li>Nên thêm nhiều tài khoản DeepSeek để pool xoay vòng, giảm lỗi quá tải/rate-limit.</li>
+          <li>Nên thêm nhiều tài khoản DeepSeek để pool xoay vòng, giảm lỗi quá tải hoặc rate-limit.</li>
           <li>API key là bí mật. Không gửi key cho người khác, không commit lên GitHub.</li>
-          <li>Nếu gặp 401, kiểm tra API key còn hoạt động. Nếu gặp 429/overloaded, thêm account hoặc chờ cooldown.</li>
-          <li>Streaming được hỗ trợ. App như Cursor/Cherry Studio có thể bật stream bình thường.</li>
+          <li>Nếu gặp lỗi 401, hãy kiểm tra API key còn hoạt động. Nếu gặp 429 hoặc overloaded, hãy thêm tài khoản hoặc chờ cooldown.</li>
+          <li>Streaming được hỗ trợ. Những ứng dụng như Cursor hoặc Cherry Studio có thể bật stream bình thường.</li>
         </ul>
       </div>
     </div>

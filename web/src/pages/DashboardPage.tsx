@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, type StatsResp, type StatusResp } from '../api';
-import { IconActivity, IconCheck, IconClock, IconZap, IconUsers } from '../icons';
+import { IconActivity, IconCheck, IconClock, IconUsers, IconZap } from '../icons';
 
 function fmtUptime(s: number): string {
   if (s < 60) return `${s} giây`;
@@ -8,6 +8,7 @@ function fmtUptime(s: number): string {
   if (s < 86400) return `${Math.floor(s / 3600)} giờ`;
   return `${Math.floor(s / 86400)} ngày`;
 }
+
 function fmtNum(n: number): string {
   return n.toLocaleString('vi-VN');
 }
@@ -19,9 +20,13 @@ export default function DashboardPage() {
   const load = async () => {
     try {
       const [s, st] = await Promise.all([api.stats(), api.status()]);
-      setStats(s); setStatus(st);
-    } catch { /* ignore */ }
+      setStats(s);
+      setStatus(st);
+    } catch {
+      /* ignore */
+    }
   };
+
   useEffect(() => {
     load();
     const t = setInterval(load, 5000);
@@ -31,6 +36,7 @@ export default function DashboardPage() {
   const successRate = stats && stats.total_requests > 0
     ? ((stats.success_requests / stats.total_requests) * 100).toFixed(1)
     : '100';
+
   const poolIssue = status && status.health && status.health !== 'ok';
   const poolMessage = status
     ? status.health === 'empty'
@@ -90,6 +96,7 @@ export default function DashboardPage() {
             <div className="empty">Chưa có tài khoản nào. Thêm tài khoản DeepSeek để bắt đầu.</div>
           )}
         </div>
+
         <div className="card">
           <div className="card-title"><IconClock width={16} height={16} /> Thông tin hệ thống</div>
           <InfoRow label="Thời gian hoạt động" value={stats ? fmtUptime(stats.uptime_secs) : '—'} />
@@ -110,6 +117,7 @@ function PoolStat({ label, value, color }: { label: string; value: number; color
     </div>
   );
 }
+
 function InfoRow({ label, value, badge }: { label: string; value: string; badge?: boolean }) {
   return (
     <div className="spread" style={{ padding: '10px 0', borderBottom: '1px solid var(--border-soft)' }}>

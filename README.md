@@ -1,61 +1,61 @@
 # Max-DeepSeek
 
-Max-DeepSeek la cong API self-hosted tuong thich OpenAI, dung pool tai khoan DeepSeek web de xoay vong, failover va quan tri bang dashboard tieng Viet.
+Max-DeepSeek là cổng API self-hosted tương thích OpenAI, dùng pool tài khoản DeepSeek web để xoay vòng, failover và quản trị bằng dashboard tiếng Việt.
 
-> Muc dich chinh: tu host cho ca nhan/nhom nho. Truoc khi public instance cho nguoi khac dung, hay tu kiem tra dieu khoan dich vu cua DeepSeek va chinh sach cua ben proxy/upstream ban dang su dung.
+> Mục đích chính: tự host cho cá nhân hoặc nhóm nhỏ. Trước khi public instance cho người khác dùng, hãy tự kiểm tra điều khoản dịch vụ của DeepSeek và chính sách của bên proxy/upstream mà bạn đang sử dụng.
 
-## Du an nay phu hop khi nao?
+## Dự án này phù hợp khi nào?
 
-- Ban muon expose mot API giong OpenAI cho tools/no-code/app noi bo
-- Ban can dashboard don gian de quan ly tai khoan, API key va logs
-- Ban uu tien tu host nhanh bang Docker Compose
-- Ban chap nhan day la mot self-hosted gateway do cong dong van hanh, khong phai dich vu managed
+- Bạn muốn expose một API giống OpenAI cho tools, no-code hoặc app nội bộ
+- Bạn cần dashboard đơn giản để quản lý tài khoản, API key và logs
+- Bạn ưu tiên tự host nhanh bằng Docker Compose
+- Bạn chấp nhận đây là một self-hosted gateway do cộng đồng vận hành, không phải dịch vụ managed
 
-## Tinh nang
+## Tính năng
 
 ![Dashboard overview](docs/assets/dashboard-overview-auth.png)
 
-_Giao dien tong quan cua dashboard admin sau khi dang nhap._
+_Giao diện tổng quan của dashboard admin sau khi đăng nhập._
 
 ![Docs page](docs/assets/dashboard-docs.png)
 
-_Trang Huong dan de noi Max-DeepSeek vao Cursor, Cherry Studio va app OpenAI-compatible._
+_Trang Hướng dẫn để nối Max-DeepSeek vào Cursor, Cherry Studio và ứng dụng OpenAI-compatible._
 
 ![Models page](docs/assets/dashboard-models.png)
 
-_Trang Mo hinh cho thay cac model expose qua gateway._
+_Trang Mô hình cho thấy các model được expose qua gateway._
 
-- Tuong thich OpenAI: `/v1/models`, `/v1/chat/completions`, ho tro stream va non-stream
-- Pool tai khoan DeepSeek: login nen, xoay vong theo tai, cooldown/recovery khi account bi gioi han
-- Hien thi thong ke request, token, do tre, log va tinh trang account
-- Quan ly API key, proxy/API base va usage proxy theo ngay
-- Dashboard React/Vite tieng Viet, phu hop van hanh self-hosted
-- Trien khai nhanh bang Docker Compose
+- Tương thích OpenAI: `/v1/models`, `/v1/chat/completions`, hỗ trợ stream và non-stream
+- Pool tài khoản DeepSeek: login nền, xoay vòng theo tải, cooldown và recovery khi account bị giới hạn
+- Hiển thị thống kê request, token, độ trễ, log và tình trạng account
+- Quản lý API key, proxy/API base và usage proxy theo ngày
+- Dashboard React/Vite tiếng Việt, phù hợp vận hành self-hosted
+- Triển khai nhanh bằng Docker Compose
 
-## Kien truc nhanh
+## Kiến trúc nhanh
 
 - `backend/`: FastAPI gateway, account pool, PoW solver, OpenAI-compatible API
 - `web/`: React + Vite + TypeScript cho admin dashboard
-- `docker/`: Dockerfile, Compose va du lieu runtime local
-- `scripts/`: smoke test va tien ich validate nhanh
+- `docker/`: Dockerfile, Compose và dữ liệu runtime local
+- `scripts/`: smoke test và tiện ích validate nhanh
 
-## Yeu cau
+## Yêu cầu
 
 - Docker + Docker Compose
-- Tai khoan DeepSeek tai `https://chat.deepseek.com`
-- Neu server dat o khu vuc de bi WAF/rate limit, nen co proxy non-US hoac API base trung gian
+- Tài khoản DeepSeek tại `https://chat.deepseek.com`
+- Nếu server đặt ở khu vực dễ bị WAF/rate limit, nên có proxy non-US hoặc API base trung gian
 
-## Cai dat nhanh
+## Cài đặt nhanh
 
 Repo public: `https://github.com/manhvicky/Max-DeepSeek`
 
-Tai lieu lien quan:
+Tài liệu liên quan:
 
-- Huong dan dong gop: `CONTRIBUTING.md`
-- Chinh sach bao mat: `SECURITY.md`
-- Ghi chu phat hanh: `CHANGELOG.md`
+- Hướng dẫn đóng góp: `CONTRIBUTING.md`
+- Chính sách bảo mật: `SECURITY.md`
+- Ghi chú phát hành: `CHANGELOG.md`
 - Checklist release: `docs/RELEASE_CHECKLIST.md`
-- Checklist tiep theo: `docs/V1_0_1_CHECKLIST.md`
+- Checklist tiếp theo: `docs/V1_0_1_CHECKLIST.md`
 
 ```bash
 git clone https://github.com/manhvicky/Max-DeepSeek.git
@@ -64,24 +64,24 @@ cp .env.example .env
 docker compose -f docker/docker-compose.yml up -d --build
 ```
 
-Mo dashboard: `http://localhost:22218/admin`
+Mở dashboard: `http://localhost:22218/admin`
 
-Lan dau vao se yeu cau dat mat khau quan tri.
+Lần đầu vào sẽ yêu cầu đặt mật khẩu quản trị.
 
-Sau 3 buoc tren, ban se co:
+Sau 3 bước trên, bạn sẽ có:
 
-- dashboard admin de them tai khoan DeepSeek
-- endpoint OpenAI-compatible tai `http://localhost:22218/v1`
-- he thong API key rieng de cap cho app/client noi vao
+- dashboard admin để thêm tài khoản DeepSeek
+- endpoint OpenAI-compatible tại `http://localhost:22218/v1`
+- hệ thống API key riêng để cấp cho app/client nối vào
 
-## Quy trinh su dung
+## Quy trình sử dụng
 
-1. Dang nhap dashboard admin.
-2. Vao **Tai khoan DeepSeek** -> them mot hoac nhieu tai khoan.
-3. Vao **API Key** -> tao key moi va luu lai ngay. Key day du chi hien mot lan.
-4. Goi API qua chuan OpenAI.
+1. Đăng nhập dashboard admin.
+2. Vào **Tài khoản DeepSeek** → thêm một hoặc nhiều tài khoản.
+3. Vào **API Key** → tạo key mới và lưu lại ngay. Key đầy đủ chỉ hiện một lần.
+4. Gọi API qua chuẩn OpenAI.
 
-Vi du curl:
+Ví dụ curl:
 
 ```bash
 export MAX_DEEPSEEK_API_KEY=<YOUR_API_KEY>
@@ -90,11 +90,11 @@ curl -X POST http://localhost:22218/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "deepseek-default",
-    "messages": [{"role": "user", "content": "Xin chao"}]
+    "messages": [{"role": "user", "content": "Xin chào"}]
   }'
 ```
 
-Vi du voi OpenAI SDK:
+Ví dụ với OpenAI SDK:
 
 ```python
 from openai import OpenAI
@@ -106,34 +106,34 @@ client = OpenAI(
 
 resp = client.chat.completions.create(
     model="deepseek-default",
-    messages=[{"role": "user", "content": "Xin chao"}],
+    messages=[{"role": "user", "content": "Xin chào"}],
 )
 print(resp.choices[0].message.content)
 ```
 
-## Models mac dinh
+## Model mặc định
 
-| Model | Mo ta |
+| Model | Mô tả |
 |-------|-------|
-| `deepseek-default` | Tro chuyen tieu chuan |
-| `deepseek-expert` | Suy luan sau / thinking |
-| `deepseek-vision` | Dau vao hinh anh neu upstream ho tro |
+| `deepseek-default` | Trò chuyện tiêu chuẩn |
+| `deepseek-expert` | Suy luận sâu / thinking |
+| `deepseek-vision` | Đầu vào hình ảnh nếu upstream hỗ trợ |
 
-## Cau hinh quan trong
+## Cấu hình quan trọng
 
-Khai bao trong `.env` hoac sua truc tiep `docker/docker-compose.yml`:
+Khai báo trong `.env` hoặc sửa trực tiếp `docker/docker-compose.yml`:
 
-- `CORS_ORIGINS` - danh sach origin, tach boi dau phay; khong nen de `*` khi public
-- `ADMIN_JWT_EXPIRE_SECONDS` - thoi gian song cua token admin; mac dinh 86400 giay
-- `DS_API_BASE` - DeepSeek API base hoac proxy compatible
-- `DS_PROXY_URL` - proxy HTTP neu can
-- `DS_MIN_ACCOUNT_INTERVAL_MS` - do gian cach giua 2 request tren cung account
-- `DS_MAX_ATTEMPTS` - so lan failover sang account khac
-- `DS_INIT_CONCURRENCY` - muc login dong thoi khi khoi dong/recovery
+- `CORS_ORIGINS` - danh sách origin, tách bởi dấu phẩy; không nên để `*` khi public
+- `ADMIN_JWT_EXPIRE_SECONDS` - thời gian sống của token admin; mặc định 86400 giây
+- `DS_API_BASE` - DeepSeek API base hoặc proxy compatible
+- `DS_PROXY_URL` - proxy HTTP nếu cần
+- `DS_MIN_ACCOUNT_INTERVAL_MS` - độ giãn cách giữa 2 request trên cùng account
+- `DS_MAX_ATTEMPTS` - số lần failover sang account khác
+- `DS_INIT_CONCURRENCY` - mức login đồng thời khi khởi động/recovery
 
-Du lieu runtime khi chay Compose duoc luu trong `docker/data/` va da duoc ignore khoi git.
+Dữ liệu runtime khi chạy Compose được lưu trong `docker/data/` và đã được ignore khỏi git.
 
-## Phat trien local
+## Phát triển local
 
 ```bash
 # Backend
@@ -148,7 +148,7 @@ npm install
 npm run dev
 ```
 
-## Validate truoc khi push
+## Validate trước khi push
 
 ```bash
 python3 -m compileall backend/app scripts/smoke_test.py
@@ -156,7 +156,7 @@ cd web && npm run build && cd ..
 python3 scripts/smoke_test.py
 ```
 
-Neu da co instance va muon test sau deploy:
+Nếu đã có instance và muốn test sau deploy:
 
 ```bash
 MAX_DEEPSEEK_URL=http://localhost:22218 \
@@ -167,61 +167,61 @@ python3 scripts/smoke_test.py
 
 ## Troubleshooting nhanh
 
-- Vao duoc dashboard nhung goi API loi `401`: kiem tra API key vua tao va header `Authorization: Bearer <key>`
-- Request hay `429` hoac bi mute: them nhieu tai khoan DeepSeek hon, dat proxy on dinh hon, giam tai request/account
-- Dashboard khong mo duoc tu may khac: kiem tra cong `22218`, reverse proxy va `CORS_ORIGINS`
-- Build web loi tren may moi: chay `cd web && npm install` de tao lai dependency theo `package-lock.json`
-- Sau deploy muon test nhanh: dung `python3 scripts/smoke_test.py` truoc khi cap cho nguoi khac su dung
+- Vào được dashboard nhưng gọi API lỗi `401`: kiểm tra API key vừa tạo và header `Authorization: Bearer ...`
+- Request hay `429` hoặc bị mute: thêm nhiều tài khoản DeepSeek hơn, đặt proxy ổn định hơn, giảm tải request/account
+- Dashboard không mở được từ máy khác: kiểm tra cổng `22218`, reverse proxy và `CORS_ORIGINS`
+- Build web lỗi trên máy mới: chạy `cd web && npm install` để tạo lại dependency theo `package-lock.json`
+- Sau deploy muốn test nhanh: dùng `python3 scripts/smoke_test.py` trước khi cấp cho người khác sử dụng
 
-## Known limitations
+## Giới hạn hiện tại
 
-- Day la gateway self-hosted dua tren pool tai khoan web, nen do on dinh phu thuoc vao tai khoan, proxy va thay doi tu upstream
-- Chua co bo test day du cho moi flow giao dien/admin; ban nay uu tien smoke test va build-check
-- Update center hien nghieng ve kieu self-hosted/manual update, chua phai auto-updater phuc tap
-- Khi public instance cho nguoi ngoai, van can tu cau hinh CORS, backup, rate-limit va giam sat rieng
+- Đây là gateway self-hosted dựa trên pool tài khoản web, nên độ ổn định phụ thuộc vào tài khoản, proxy và thay đổi từ upstream
+- Chưa có bộ test đầy đủ cho mọi flow giao diện/admin; bản này ưu tiên smoke test và build-check
+- Trung tâm cập nhật hiện nghiêng về kiểu self-hosted/manual update, chưa phải auto-updater phức tạp
+- Khi public instance cho người ngoài, vẫn cần tự cấu hình CORS, backup, rate-limit và giám sát riêng
 
-## Public an toan hon
+## Public an toàn hơn
 
-- Khong commit `.env`, `docker/data/`, DB SQLite, WASM cache, log hay test key
-- Dat `CORS_ORIGINS` theo domain that
-- Doi API key sau khi deploy production
-- Dat mat khau admin manh va khong dung chung voi tai khoan DeepSeek
-- Backup `docker/data/` neu day la instance van hanh quan trong
-- Revoke token GitHub/PAT sau khi dung xong release neu da chia se trong kenh chat tam thoi
+- Không commit `.env`, `docker/data/`, DB SQLite, WASM cache, log hay test key
+- Đặt `CORS_ORIGINS` theo domain thật
+- Đổi API key sau khi deploy production
+- Đặt mật khẩu admin mạnh và không dùng chung với tài khoản DeepSeek
+- Backup `docker/data/` nếu đây là instance vận hành quan trọng
+- Revoke GitHub token/PAT sau khi dùng xong release nếu đã chia sẻ trong kênh chat tạm thời
 
-## Dong gop va ho tro
+## Đóng góp và hỗ trợ
 
-- Neu muon gui PR, doc `CONTRIBUTING.md`
-- Neu phat hien loi bao mat, doc `SECURITY.md`
-- Neu muon public release metadata cho trang `Cap nhat`, tham khao `docs/update-manifest.example.json`
+- Nếu muốn gửi PR, đọc `CONTRIBUTING.md`
+- Nếu phát hiện lỗi bảo mật, đọc `SECURITY.md`
+- Nếu muốn public release metadata cho trang cập nhật, tham khảo `docs/update-manifest.example.json`
 
 ## Release checklist
 
-- [ ] `git status` sach, khong con data/runtime file
-- [ ] `.env.example` cap nhat day du
+- [ ] `git status` sạch, không còn data/runtime file
+- [ ] `.env.example` cập nhật đầy đủ
 - [ ] `npm run build` pass
 - [ ] `python3 -m compileall backend/app scripts/smoke_test.py` pass
 - [ ] `python3 scripts/smoke_test.py` pass
-- [ ] README, license, screenshot/dashboard docs day du
-- [ ] Tao tag/release note va mo ta ro cach deploy
+- [ ] README, license, screenshot/dashboard docs đầy đủ
+- [ ] Tạo tag/release note và mô tả rõ cách deploy
 
-## Cap nhat giong 9router
+## Cập nhật giống 9router
 
-- Dashboard co muc `Cap nhat` de xem version hien tai, version moi, changelog, lenh update va rollback
-- Neu bat `MAX_DEEPSEEK_ALLOW_SELF_UPDATE=1`, admin co the bam cap nhat/rollback ngay trong giao dien
-- Neu de mac dinh `0`, giao dien van hien lenh copy-paste an toan:
+- Dashboard có mục **Hướng dẫn** để xem thông tin phiên bản, nguồn phát hành và thao tác kiểm tra cập nhật
+- Nếu bật `MAX_DEEPSEEK_ALLOW_SELF_UPDATE=1`, admin có thể kiểm tra và cập nhật theo luồng self-hosted
+- Nếu để mặc định `0`, bạn có thể cập nhật thủ công bằng script:
 
 ```bash
 bash scripts/update.sh
 bash scripts/rollback.sh
 ```
 
-- Manifest mau de public release metadata: `docs/update-manifest.example.json`
-- Neu muon check ban moi online, set `MAX_DEEPSEEK_UPDATE_MANIFEST_URL` tro toi file JSON raw tren GitHub/GitHub Pages
+- Manifest mẫu để public release metadata: `docs/update-manifest.example.json`
+- Nếu muốn check bản mới online, set `MAX_DEEPSEEK_UPDATE_MANIFEST_URL` trỏ tới file JSON raw trên GitHub hoặc GitHub Pages
 
-## Tac gia
+## Tác giả
 
-- Vu Duy Manh
+- Vũ Duy Mạnh
 - manhq7@gmail.com
 
 ## License

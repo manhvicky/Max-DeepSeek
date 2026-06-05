@@ -8,7 +8,7 @@ function fmtTs(ts: number): string {
   return new Date(ts * 1000).toLocaleString('vi-VN');
 }
 
-function copy(text: string, toast: (msg: string, kind?: 'ok' | 'err') => void, msg = 'Da sao chep') {
+function copy(text: string, toast: (msg: string, kind?: 'ok' | 'err') => void, msg = 'Đã sao chép') {
   navigator.clipboard.writeText(text);
   toast(msg, 'ok');
 }
@@ -31,7 +31,7 @@ export default function UpdatePage() {
       setStatus(updateStatus);
       setHistory(updateHistory);
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Khong tai duoc thong tin cap nhat', 'err');
+      toast(err instanceof Error ? err.message : 'Không tải được thông tin cập nhật', 'err');
     } finally {
       setLoading(false);
     }
@@ -46,17 +46,17 @@ export default function UpdatePage() {
     try {
       if (kind === 'check') {
         await api.checkUpdate();
-        toast('Da kiem tra phien ban moi', 'ok');
+        toast('Đã kiểm tra phiên bản mới', 'ok');
       } else if (kind === 'apply') {
         const actionRes = await api.applyUpdate(status?.latest_version);
-        toast(actionRes.message || 'Da thuc hien lenh', actionRes.ok ? 'ok' : 'err');
+        toast(actionRes.message || 'Đã thực hiện lệnh', actionRes.ok ? 'ok' : 'err');
       } else {
         const actionRes = await api.rollbackUpdate() as import('../api').UpdateActionResp;
-        toast(actionRes.message || 'Da thuc hien lenh', actionRes.ok ? 'ok' : 'err');
+        toast(actionRes.message || 'Đã thực hiện lệnh', actionRes.ok ? 'ok' : 'err');
       }
       await load();
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Tac vu that bai', 'err');
+      toast(err instanceof Error ? err.message : 'Tác vụ thất bại', 'err');
     } finally {
       setBusy(false);
     }
@@ -67,53 +67,53 @@ export default function UpdatePage() {
       <div className="hero-card mb-24">
         <div>
           <div className={`badge ${status?.update_available ? 'busy' : 'ok'}`} style={{ marginBottom: 12 }}>
-            {status?.update_available ? 'Co ban cap nhat moi' : 'Dang o ban moi nhat'}
+            {status?.update_available ? 'Có bản cập nhật mới' : 'Đang ở bản mới nhất'}
           </div>
-          <h2 style={{ fontSize: 28, marginBottom: 8 }}>Cap nhat Max-DeepSeek</h2>
+          <h2 style={{ fontSize: 28, marginBottom: 8 }}>Cập nhật Max-DeepSeek</h2>
           <p style={{ color: 'var(--text-dim)', maxWidth: 760, lineHeight: 1.7 }}>
-            Theo doi phien ban, changelog, thong tin tac gia va cap nhat he thong theo kieu one-click.
-            Neu self-update dang tat, trang nay van hien lenh de copy va cap nhat thu cong giong 9router.
+            Theo dõi phiên bản, changelog, thông tin tác giả và cập nhật hệ thống theo kiểu one-click.
+            Nếu self-update đang tắt, trang này vẫn hiện lệnh để copy và cập nhật thủ công giống 9router.
           </p>
         </div>
         <div className="hero-actions">
-          <button className="btn" onClick={() => action('check')} disabled={busy || loading}><IconRefresh width={15} height={15} /> Kiem tra</button>
-          <button className="btn btn-primary" onClick={() => action('apply')} disabled={busy || loading}><IconUpload width={15} height={15} /> Cap nhat ngay</button>
+          <button className="btn" onClick={() => action('check')} disabled={busy || loading}><IconRefresh width={15} height={15} /> Kiểm tra</button>
+          <button className="btn btn-primary" onClick={() => action('apply')} disabled={busy || loading}><IconUpload width={15} height={15} /> Cập nhật ngay</button>
           <button className="btn" onClick={() => action('rollback')} disabled={busy || loading}><IconRotateCcw width={15} height={15} /> Rollback</button>
         </div>
       </div>
 
       <div className="stat-grid mb-24">
-        <Stat title="Hien tai" value={status?.current_version || info?.version || '—'} hint="Phien ban dang chay" />
-        <Stat title="Moi nhat" value={status?.latest_version || '—'} hint={status?.published_at || 'Manifest / GitHub'} />
-        <Stat title="Kenh" value={status?.channel || info?.channel || 'stable'} hint="Stable / release" />
-        <Stat title="Tac gia" value={info?.author.name || 'Vu Duy Manh'} hint={info?.author.email || 'manhq7@gmail.com'} />
+        <Stat title="Hiện tại" value={status?.current_version || info?.version || '—'} hint="Phiên bản đang chạy" />
+        <Stat title="Mới nhất" value={status?.latest_version || '—'} hint={status?.published_at || 'Manifest / GitHub'} />
+        <Stat title="Kênh" value={status?.channel || info?.channel || 'stable'} hint="Stable / release" />
+        <Stat title="Tác giả" value={info?.author.name || 'Vũ Duy Mạnh'} hint={info?.author.email || 'manhq7@gmail.com'} />
       </div>
 
       <div className="grid-2 mb-24" style={{ alignItems: 'start' }}>
         <div className="card">
-          <div className="card-title"><IconCheck width={16} height={16} /> Trang thai cap nhat</div>
-          <Info label="Ung dung" value={info?.name || 'Max-DeepSeek'} />
-          <Info label="Version hien tai" value={status?.current_version || info?.version || '—'} />
-          <Info label="Version moi" value={status?.latest_version || '—'} />
+          <div className="card-title"><IconCheck width={16} height={16} /> Trạng thái cập nhật</div>
+          <Info label="Ứng dụng" value={info?.name || 'Max-DeepSeek'} />
+          <Info label="Phiên bản hiện tại" value={status?.current_version || info?.version || '—'} />
+          <Info label="Phiên bản mới" value={status?.latest_version || '—'} />
           <Info label="GitHub / Release" value={status?.release_url || info?.repository || '—'} />
-          <Info label="Tac gia" value={`${info?.author.name || 'Vu Duy Manh'} <${info?.author.email || 'manhq7@gmail.com'}>`} />
+          <Info label="Tác giả" value={`${info?.author.name || 'Vũ Duy Mạnh'} <${info?.author.email || 'manhq7@gmail.com'}>`} />
           {status?.notes && <p className="soft-note" style={{ marginTop: 14 }}>{status.notes}</p>}
         </div>
 
         <div className="card">
           <div className="spread mb-20" style={{ gap: 12, flexWrap: 'wrap' }}>
-            <div className="card-title" style={{ marginBottom: 0 }}><IconClock width={16} height={16} /> Lenh cap nhat</div>
-            <button className="btn btn-sm" onClick={() => copy(status?.update_command || '', toast, 'Da sao chep lenh cap nhat')}><IconCopy width={14} height={14} /> Copy lenh</button>
+            <div className="card-title" style={{ marginBottom: 0 }}><IconClock width={16} height={16} /> Lệnh cập nhật</div>
+            <button className="btn btn-sm" onClick={() => copy(status?.update_command || '', toast, 'Đã sao chép lệnh cập nhật')}><IconCopy width={14} height={14} /> Copy lệnh</button>
           </div>
           <pre className="code-block">{status?.update_command || 'bash /app/scripts/update.sh'}</pre>
           <div className="spread" style={{ marginTop: 12, gap: 12, flexWrap: 'wrap' }}>
-            <div className="card-title" style={{ marginBottom: 0 }}>Lenh rollback</div>
-            <button className="btn btn-sm" onClick={() => copy(status?.rollback_command || '', toast, 'Da sao chep lenh rollback')}><IconCopy width={14} height={14} /> Copy lenh</button>
+            <div className="card-title" style={{ marginBottom: 0 }}>Lệnh rollback</div>
+            <button className="btn btn-sm" onClick={() => copy(status?.rollback_command || '', toast, 'Đã sao chép lệnh rollback')}><IconCopy width={14} height={14} /> Copy lệnh</button>
           </div>
           <pre className="code-block">{status?.rollback_command || 'bash /app/scripts/rollback.sh'}</pre>
           {!status?.allow_self_update && (
             <p className="soft-note" style={{ marginTop: 12 }}>
-              Self-update dang tat de an toan. Anh van co the bam copy lenh va chay tren server, hoac bat bien moi truong <span className="code-pill">MAX_DEEPSEEK_ALLOW_SELF_UPDATE=1</span>.
+              Self-update đang tắt để an toàn. Anh vẫn có thể bấm copy lệnh và chạy trên server, hoặc bật biến môi trường <span className="code-pill">MAX_DEEPSEEK_ALLOW_SELF_UPDATE=1</span>.
             </p>
           )}
         </div>
@@ -122,7 +122,7 @@ export default function UpdatePage() {
       <div className="card mb-24">
         <div className="card-title"><IconRefresh width={16} height={16} /> Changelog</div>
         {changelog.length === 0 ? (
-          <div className="empty">Chua co changelog tu manifest.</div>
+          <div className="empty">Chưa có changelog từ manifest.</div>
         ) : (
           <div className="timeline">
             {changelog.map((item, idx) => (
@@ -133,19 +133,19 @@ export default function UpdatePage() {
       </div>
 
       <div className="card">
-        <div className="card-title"><IconClock width={16} height={16} /> Lich su cap nhat</div>
+        <div className="card-title"><IconClock width={16} height={16} /> Lịch sử cập nhật</div>
         {history.length === 0 ? (
-          <div className="empty">Chua co lich su.</div>
+          <div className="empty">Chưa có lịch sử.</div>
         ) : (
           <div className="table-wrap" style={{ border: 'none', background: 'transparent' }}>
             <table>
               <thead>
                 <tr>
-                  <th>Thoi gian</th>
-                  <th>Hanh dong</th>
+                  <th>Thời gian</th>
+                  <th>Hành động</th>
                   <th>Version</th>
-                  <th>Trang thai</th>
-                  <th>Ghi chu</th>
+                  <th>Trạng thái</th>
+                  <th>Ghi chú</th>
                 </tr>
               </thead>
               <tbody>

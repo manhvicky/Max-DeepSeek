@@ -1,10 +1,10 @@
-# GitHub Release Checklist
+# Checklist phát hành GitHub
 
-## Before commit
+## Trước khi commit
 
-- [ ] `git status` khong con file data/runtime can tranh commit
-- [ ] Kiem tra `.env.example` va `README.md` khop voi code hien tai
-- [ ] Dam bao `docker/data/`, DB, wasm, logs, test key deu dang bi ignore
+- [ ] `git status` không còn file data/runtime cần tránh commit
+- [ ] Kiểm tra `.env.example` và `README.md` khớp với code hiện tại
+- [ ] Đảm bảo `docker/data/`, DB, wasm, logs, test key đều đang bị ignore
 
 ## Validation
 
@@ -13,15 +13,15 @@
 - [ ] `python3 scripts/smoke_test.py`
 - [ ] `python3 tests/test_api.py`
 
-## Repo polish
+## Hoàn thiện repo
 
-- [ ] Them screenshot dashboard vao README neu can
-- [ ] Viet release notes: tinh nang, gioi han, huong dan deploy
-- [ ] Gan tag version dau tien, vi du `v1.0.0`
-- [ ] Kiem tra lai license, mo ta repo va topics tren GitHub
+- [ ] Thêm screenshot dashboard vào README nếu cần
+- [ ] Viết release notes: tính năng, giới hạn, hướng dẫn deploy
+- [ ] Gắn tag version đầu tiên, ví dụ `v1.0.0`
+- [ ] Kiểm tra lại license, mô tả repo và topics trên GitHub
 
-## After publish
+## Sau khi publish
 
-- [ ] Tao API key moi cho production
-- [ ] Doi mat khau admin neu da test bang mat khau tam
-- [ ] Backup `docker/data/` cua instance dang chay
+- [ ] Tạo API key mới cho production
+- [ ] Đổi mật khẩu admin nếu đã test bằng mật khẩu tạm
+- [ ] Backup `docker/data/` của instance đang chạy

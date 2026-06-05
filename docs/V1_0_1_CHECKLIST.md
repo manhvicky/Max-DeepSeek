@@ -1,23 +1,23 @@
-# v1.0.1 Checklist
+# Checklist v1.0.1
 
-Muc tieu: lam ban public de tin cay hon cho nguoi moi clone ve va tu host.
+Mục tiêu: làm bản public đáng tin cậy hơn cho người mới clone về và tự host.
 
-## Uu tien cao
+## Ưu tiên cao
 
-- [ ] Them screenshot dashboard va release asset dep hon
-- [ ] Bo sung known limitations trong README
-- [ ] Them CI build-check cho backend/frontend
-- [ ] Them test cho cac trang docs/update/about va mot vai regression quan trong
+- [ ] Thêm screenshot dashboard và release asset đẹp hơn
+- [ ] Bổ sung known limitations trong README
+- [ ] Thêm CI build-check cho backend/frontend
+- [ ] Thêm test cho các trang docs/update/about và một vài regression quan trọng
 
-## Uu tien vua
+## Ưu tiên vừa
 
-- [ ] Co file release notes rieng cho moi tag moi
-- [ ] Them changelog/manifest generation flow ro rang hon
-- [ ] Cai thien huong dan deploy sau reverse proxy/domain that
-- [ ] Mo rong troubleshooting cho loi login account, rate-limit, proxy
+- [ ] Có file release notes riêng cho mỗi tag mới
+- [ ] Thêm changelog/manifest generation flow rõ ràng hơn
+- [ ] Cải thiện hướng dẫn deploy sau reverse proxy/domain thật
+- [ ] Mở rộng troubleshooting cho lỗi login account, rate-limit, proxy
 
-## Uu tien thap
+## Ưu tiên thấp
 
-- [ ] Can nhac Docker healthcheck / auto-restart docs chi tiet hon
-- [ ] Can nhac GitHub issue labels + project hygiene
-- [ ] Them anh/gif cho flow tao API key va connect OpenAI-compatible app
+- [ ] Cân nhắc Docker healthcheck / auto-restart docs chi tiết hơn
+- [ ] Cân nhắc GitHub issue labels + project hygiene
+- [ ] Thêm ảnh/GIF cho flow tạo API key và kết nối ứng dụng OpenAI-compatible

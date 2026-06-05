@@ -196,6 +196,9 @@ tr:hover td { background: var(--card-hover); }
   flex-wrap: wrap;
 }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-card-compact {
+  align-items: center;
+}
 .code-block {
   background: var(--bg);
   border: 1px solid var(--border);

@@ -2,42 +2,39 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { clearToken, api, type StatusResp } from './api';
 import {
-  IconDashboard, IconUsers, IconKey, IconBox, IconList, IconSettings, IconLogout, IconBook, IconGlobe, IconRefresh, IconSparkles,
+  IconDashboard, IconUsers, IconKey, IconBox, IconList, IconSettings, IconLogout, IconBook, IconGlobe,
 } from './icons';
 
 const NAV = [
-  { to: '/admin', end: true, icon: IconDashboard, label: 'Tong quan' },
-  { to: '/admin/accounts', icon: IconUsers, label: 'Tai khoan DeepSeek' },
+  { to: '/admin', end: true, icon: IconDashboard, label: 'Tổng quan' },
+  { to: '/admin/accounts', icon: IconUsers, label: 'Tài khoản DeepSeek' },
   { to: '/admin/keys', icon: IconKey, label: 'API Key' },
-  { to: '/admin/docs', icon: IconBook, label: 'Huong dan' },
-  { to: '/admin/update', icon: IconRefresh, label: 'Cap nhat' },
-  { to: '/admin/about', icon: IconSparkles, label: 'Tac gia' },
-  { to: '/admin/models', icon: IconBox, label: 'Mo hinh' },
-  { to: '/admin/logs', icon: IconList, label: 'Nhat ky' },
-  { to: '/admin/config', icon: IconSettings, label: 'Cau hinh' },
+  { to: '/admin/docs', icon: IconBook, label: 'Hướng dẫn' },
+  { to: '/admin/models', icon: IconBox, label: 'Mô hình' },
+  { to: '/admin/logs', icon: IconList, label: 'Nhật ký' },
+  { to: '/admin/config', icon: IconSettings, label: 'Cấu hình' },
   { to: '/admin/proxy', icon: IconGlobe, label: 'Proxy' },
 ];
 
 const BOTTOM_NAV = [
-  { to: '/admin', end: true, icon: IconDashboard, label: 'Tong quan' },
-  { to: '/admin/accounts', icon: IconUsers, label: 'Tai khoan' },
+  { to: '/admin', end: true, icon: IconDashboard, label: 'Tổng quan' },
+  { to: '/admin/accounts', icon: IconUsers, label: 'Tài khoản' },
   { to: '/admin/keys', icon: IconKey, label: 'API Key' },
-  { to: '/admin/update', icon: IconRefresh, label: 'Cap nhat' },
-  { to: '/admin/about', icon: IconSparkles, label: 'Tac gia' },
-  { to: '/admin/config', icon: IconSettings, label: 'Cau hinh' },
+  { to: '/admin/docs', icon: IconBook, label: 'Hướng dẫn' },
+  { to: '/admin/config', icon: IconSettings, label: 'Cấu hình' },
 ];
 
 const TITLES: Record<string, string> = {
-  '/admin': 'Tong quan',
-  '/admin/accounts': 'Tai khoan DeepSeek',
+  '/admin': 'Tổng quan',
+  '/admin/accounts': 'Tài khoản DeepSeek',
   '/admin/keys': 'API Key',
-  '/admin/docs': 'Huong dan su dung',
-  '/admin/update': 'Cap nhat he thong',
-  '/admin/about': 'Tac gia va phat hanh',
-  '/admin/models': 'Mo hinh',
-  '/admin/logs': 'Nhat ky',
-  '/admin/config': 'Cau hinh',
-  '/admin/proxy': 'Quan ly Proxy',
+  '/admin/docs': 'Hướng dẫn sử dụng',
+  '/admin/update': 'Cập nhật hệ thống',
+  '/admin/about': 'Tác giả và phát hành',
+  '/admin/models': 'Mô hình',
+  '/admin/logs': 'Nhật ký',
+  '/admin/config': 'Cấu hình',
+  '/admin/proxy': 'Quản lý Proxy',
 };
 
 export default function Layout() {
@@ -48,7 +45,11 @@ export default function Layout() {
 
   useEffect(() => {
     const load = async () => {
-      try { setStatus(await api.status()); } catch { /* ignore */ }
+      try {
+        setStatus(await api.status());
+      } catch {
+        /* ignore */
+      }
     };
     load();
     const t = setInterval(load, 5000);
@@ -62,7 +63,6 @@ export default function Layout() {
 
   return (
     <div className="app-shell">
-      {/* Sidebar desktop */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="logo">M</div>
@@ -114,7 +114,6 @@ export default function Layout() {
         </main>
       </div>
 
-      {/* Bottom nav mobile */}
       <nav className="bottom-nav">
         {BOTTOM_NAV.map((n) => {
           const Icon = n.icon;

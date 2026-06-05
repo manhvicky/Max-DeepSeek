@@ -1,32 +1,32 @@
-# Security Policy
+# Chính sách bảo mật
 
-Neu ban phat hien van de bao mat, vui long **khong mo public issue ngay lap tuc**.
+Nếu bạn phát hiện vấn đề bảo mật, vui lòng **không mở public issue ngay lập tức**.
 
-## Cach bao cao
+## Cách báo cáo
 
-Gui email toi:
+Gửi email tới:
 
-- Vu Duy Manh
+- Vũ Duy Mạnh
 - manhq7@gmail.com
 
-Kem theo:
+Kèm theo:
 
-- mo ta ngan gon ve lo hong
-- cach tai hien
-- muc do anh huong
-- log/an de nhan dien neu co
+- mô tả ngắn gọn về lỗ hổng
+- cách tái hiện
+- mức độ ảnh hưởng
+- log/ảnh để nhận diện nếu có
 
-## Pham vi uu tien
+## Phạm vi ưu tiên
 
-Uu tien xu ly cho cac van de:
+Ưu tiên xử lý cho các vấn đề:
 
-- bo qua xac thuc admin
-- ro ri API key, mat khau hoac token
+- bỏ qua xác thực admin
+- rò rỉ API key, mật khẩu hoặc token
 - SSRF/proxy abuse
-- thuc thi lenh trai phep trong flow update
-- loi cho phep doc/sua du lieu runtime cua instance khac
+- thực thi lệnh trái phép trong flow update
+- lỗi cho phép đọc/sửa dữ liệu runtime của instance khác
 
-## Luu y
+## Lưu ý
 
-- Day la du an self-hosted; nguoi van hanh can tu bao ve `.env`, backup va host runtime.
-- Vui long cho phep mot khoang thoi gian hop ly de xac nhan va khac phuc truoc khi cong khai chi tiet.
+- Đây là dự án self-hosted; người vận hành cần tự bảo vệ `.env`, backup và host runtime.
+- Vui lòng cho phép một khoảng thời gian hợp lý để xác nhận và khắc phục trước khi công khai chi tiết.
