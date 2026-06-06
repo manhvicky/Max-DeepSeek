@@ -1,0 +1,8 @@
+.git
+.env
+docker/data
+web/node_modules
+web/dist
+backend/web_dist
+__pycache__
+*.pyc

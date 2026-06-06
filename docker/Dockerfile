@@ -1,3 +1,11 @@
+FROM node:20-slim AS web-build
+
+WORKDIR /src/web
+COPY web/package*.json ./
+RUN npm install
+COPY web/ ./
+RUN npm run build
+
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -10,7 +18,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
-COPY web/dist ./web_dist
+COPY --from=web-build /src/web/dist ./web_dist
 COPY scripts ./scripts
 COPY VERSION ./VERSION
 
