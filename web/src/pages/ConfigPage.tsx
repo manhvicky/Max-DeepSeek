@@ -119,10 +119,22 @@ export default function ConfigPage() {
       </div>
       <button className="btn btn-primary" onClick={saveAll} disabled={loading}>Lưu server/tool call</button>
     </div>
-    <div className="card"><div className="card-title">Đổi mật khẩu quản trị</div>
+    <div className="card mb-24"><div className="card-title">Đổi mật khẩu quản trị</div>
       <div className="field"><label>Mật khẩu hiện tại</label><input className="input" type="password" value={oldPw} onChange={(e) => setOldPw(e.target.value)} /></div>
       <div className="field"><label>Mật khẩu mới</label><input className="input" type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} /></div>
       <button className="btn btn-primary" onClick={changePw} disabled={loading}>Đổi mật khẩu</button>
+    </div>
+    <div className="card"><div className="card-title">Quên mật khẩu hoặc cần reset</div>
+      <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 12 }}>
+        Nếu còn đăng nhập được, hãy đổi mật khẩu bằng form ở trên. Nếu đã quên mật khẩu và không vào được dashboard,
+        SSH vào máy chủ, mở thư mục Max-DeepSeek rồi reset dữ liệu runtime để quay về mật khẩu mặc định <span className="code-pill">123456</span>.
+      </p>
+      <pre className="code-block">{`docker compose -f docker/docker-compose.yml down
+rm -rf docker/data
+docker compose -f docker/docker-compose.yml up -d --build`}</pre>
+      <p style={{ fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.7, marginTop: 10 }}>
+        Lưu ý: lệnh reset này sẽ xóa tài khoản DeepSeek, API key và log đã lưu trong docker/data. Hãy backup docker/data trước nếu instance đang dùng thật.
+      </p>
     </div>
   </div>;
 }

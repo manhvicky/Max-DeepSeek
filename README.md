@@ -68,6 +68,8 @@ Mở dashboard: `http://localhost:22218/admin`
 
 Mật khẩu quản trị mặc định cho lần đăng nhập đầu tiên là `123456`. Sau khi đăng nhập, hãy đổi sang mật khẩu mạnh hơn nếu public instance cho người khác dùng.
 
+Nếu quên mật khẩu admin và không vào được dashboard, có thể reset instance mới bằng cách dừng container, xóa `docker/data/`, rồi build lại. Lưu ý thao tác này xóa tài khoản DeepSeek, API key và log đã lưu.
+
 Sau 3 bước trên, bạn sẽ có:
 
 - dashboard admin để thêm tài khoản DeepSeek
