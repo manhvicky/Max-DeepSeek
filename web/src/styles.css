@@ -152,7 +152,9 @@ tr:hover td { background: var(--card-hover); }
 .login-card { width: 100%; max-width: 400px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 .login-logo { width: 52px; height: 52px; border-radius: 13px; margin: 0 auto 18px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); display: grid; place-items: center; font-weight: 800; font-size: 26px; color: #fff; box-shadow: 0 4px 16px var(--accent-soft); }
 .login-card h2 { text-align: center; font-size: 22px; margin-bottom: 6px; }
-.login-card .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+.login-card .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
+.login-hint { margin-bottom: 20px; padding: 12px 14px; border-radius: var(--radius-sm); background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.28); color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+.login-hint strong { color: var(--accent); }
 .row { display: flex; align-items: center; gap: 12px; }
 .spread { display: flex; align-items: center; justify-content: space-between; }
 .mb-20 { margin-bottom: 20px; }

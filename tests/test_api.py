@@ -9,7 +9,7 @@ import urllib.request
 from typing import Any
 
 BASE = os.getenv("MAX_DEEPSEEK_URL", "http://localhost:22218").rstrip("/")
-ADMIN_PASSWORD = os.getenv("MAX_DEEPSEEK_ADMIN_PASSWORD", "admin123")
+ADMIN_PASSWORD = os.getenv("MAX_DEEPSEEK_ADMIN_PASSWORD", "123456")
 EXPECT_FRESH_SETUP = os.getenv("MAX_DEEPSEEK_EXPECT_FRESH_SETUP", "0") == "1"
 
 

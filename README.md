@@ -66,7 +66,7 @@ docker compose -f docker/docker-compose.yml up -d --build
 
 Mở dashboard: `http://localhost:22218/admin`
 
-Lần đầu vào sẽ yêu cầu đặt mật khẩu quản trị.
+Mật khẩu quản trị mặc định cho lần đăng nhập đầu tiên là `123456`. Sau khi đăng nhập, hãy đổi sang mật khẩu mạnh hơn nếu public instance cho người khác dùng.
 
 Sau 3 bước trên, bạn sẽ có:
 

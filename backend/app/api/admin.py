@@ -55,7 +55,10 @@ class SetupReq(BaseModel):
 async def login(req: LoginReq):
     pw_hash = await store.get_setting("admin_password_hash")
     if not pw_hash:
-        raise HTTPException(403, "Chưa đặt mật khẩu admin")
+        if req.password != "123456":
+            raise HTTPException(401, "Sai mật khẩu mặc định. Lần đầu đăng nhập dùng 123456")
+        await store.set_setting("admin_password_hash", crypto.hash_password(req.password))
+        pw_hash = await store.get_setting("admin_password_hash")
     if req.password == "__check__":
         raise HTTPException(401, "check")
     if not crypto.verify_password(req.password, pw_hash):
